@@ -1,0 +1,29 @@
+# Fast smoke test (one seed, two recursive generations).
+#   python run_experiment.py --config configs/quick.yaml --task both
+seed: 42
+device: auto
+output_dir: outputs/quick
+data:
+  num_symbols: 8
+  sequence_pairs: 6
+  train_samples: 30000
+  val_samples: 1000
+  test_samples: 1000
+  next_symbol_source: context
+model:
+  d_model: 64
+  n_heads: 4
+  n_layers: 2
+  d_ff: 128
+  dropout: 0.0
+training:
+  epochs: 15
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  patience: 6
+  verbose: true
+collapse:
+  generations: 2
+  synthetic_fraction: 1.0
+  temperature: 1.0

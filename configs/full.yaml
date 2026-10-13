@@ -1,0 +1,26 @@
+seed: 42
+device: auto
+output_dir: outputs/full
+data:
+  num_symbols: 12
+  sequence_pairs: 10
+  train_samples: 20000
+  val_samples: 3000
+  test_samples: 5000
+model:
+  d_model: 128
+  n_heads: 4
+  n_layers: 2
+  d_ff: 256
+  dropout: 0.0
+training:
+  epochs: 40
+  batch_size: 256
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  patience: 6
+collapse:
+  generations: 8
+  synthetic_fraction: 1.0
+  temperature: 1.0
+

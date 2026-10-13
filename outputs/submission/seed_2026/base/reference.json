@@ -1,0 +1,6 @@
+{
+  "baseline_random_context_value": 0.258,
+  "baseline_most_frequent_context_value": 0.3675,
+  "baseline_uniform_value_attention_induction_score": 0.27183333333333337,
+  "real_first_value_accuracy": 1.0
+}

@@ -1,0 +1,39 @@
+# Main study reported in the extended abstract.
+#   python tune.py --config configs/submission.yaml      (hyper-parameter selection, validation only)
+#   python run_study.py --config configs/submission.yaml (3 seeds x 2 tasks x 6 generations)
+seed: 42
+seeds: [42, 123, 2026]
+device: auto
+output_dir: outputs/submission
+data:
+  num_symbols: 8
+  sequence_pairs: 6
+  # Large enough for the induction-head phase transition (~1,500-2,000 steps).
+  # The pilot used 3,000 examples and stopped at ~600 steps, before the
+  # transition, and learned only a "copy a value from context" heuristic.
+  train_samples: 50000
+  val_samples: 2000
+  test_samples: 2000
+  next_symbol_source: context
+model:
+  d_model: 64
+  n_heads: 4
+  n_layers: 2
+  d_ff: 128
+  dropout: 0.0
+training:
+  epochs: 20
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  # Patience must outlast the pre-transition loss plateau, otherwise early
+  # stopping ends training before the induction head forms.
+  patience: 6
+  verbose: true
+collapse:
+  generations: 5
+  synthetic_fraction: 1.0
+  temperature: 1.0
+tuning:
+  training.learning_rate: [0.0003, 0.001, 0.003]
+  data.train_samples: [3000, 50000]

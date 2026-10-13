@@ -1,0 +1,29 @@
+FINAL CHECKS BEFORE MOODLE SUBMISSION (due 27 October 2026, 17:00)
+===================================================================
+
+[DONE] PyTorch implementation, base and extended recursive-training tasks
+[DONE] Train/validation/test split; test set used only for final evaluation
+[DONE] Hyper-parameter selection on validation data (tune.py)
+[DONE] Induction heads form at generation 0 (100% accuracy, induction score ~1)
+[DONE] Extended task redesigned so every target is inferable in context
+[DONE] Free-running consistency and symbol-distribution collapse metrics
+[DONE] Per-head ablation (causal evidence) and heuristic baselines
+[DONE] Three-seed study with raw metrics, checkpoints and attention maps
+[DONE] requirements.txt and README.txt with exact reproduction commands
+[DONE] Preliminary contribution statement (individual)
+
+[REQUIRED] Rewrite the extended abstract around the new results. The PDF in
+           output/pdf/ and make_report.py describe the pilot run and are out of
+           date. Report the pilot briefly as a "what went wrong" result.
+[REQUIRED] Append the exact NeurIPS 2024 ethics questionnaire from Moodle,
+           after the references (missing questionnaire = project not marked).
+[REQUIRED] Insert the exact Faculty of Science AI Ethics Statement.
+[CONFIRM]  Use the Moodle extended-abstract template; keep the main text to
+           two pages.
+
+FILES TO SUBMIT
+---------------
+1. Source code (src/, run_experiment.py, run_study.py, tune.py, configs/, tests/)
+2. requirements.txt
+3. README.txt
+4. Final extended abstract PDF with both ethics declarations appended

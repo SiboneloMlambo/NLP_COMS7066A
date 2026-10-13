@@ -1,0 +1,14 @@
+{
+  "baseline_random_context_value": 0.2875,
+  "baseline_most_frequent_context_value": 0.366,
+  "baseline_uniform_value_attention_induction_score": 0.2683333333333333,
+  "real_first_value_accuracy": 1.0,
+  "real_symbol_valid": 1.0,
+  "real_symbol_in_context": 1.0,
+  "real_pair_consistency": 1.0,
+  "real_full_correct": 1.0,
+  "real_symbol_entropy": 2.9986269703725945,
+  "real_max_symbol_share": 0.131,
+  "real_symbol_kl_to_uniform": 0.0013730296274052402,
+  "real_mean_relative_position": 0.40930000000000005
+}
