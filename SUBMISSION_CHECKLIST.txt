@@ -12,12 +12,13 @@ FINAL CHECKS BEFORE MOODLE SUBMISSION (due 27 October 2026, 17:00)
 [DONE] requirements.txt and README.txt with exact reproduction commands
 [DONE] Preliminary contribution statement (individual)
 
-[REQUIRED] Rewrite the extended abstract around the new results. The PDF in
-           output/pdf/ and make_report.py describe the pilot run and are out of
-           date. Report the pilot briefly as a "what went wrong" result.
-[REQUIRED] Append the exact NeurIPS 2024 ethics questionnaire from Moodle,
-           after the references (missing questionnaire = project not marked).
-[REQUIRED] Insert the exact Faculty of Science AI Ethics Statement.
+[DONE] Extended abstract rewritten around the new results (report/main.pdf);
+       main text fits on two pages. The pilot is reported as a "what went wrong" result.
+[CHECK]    Read the abstract carefully: you must be able to explain every claim.
+[REQUIRED] Save the NeurIPS 2024 checklist .tex from Moodle as report/checklist.tex,
+           fill it in and recompile (missing checklist = project not marked).
+[REQUIRED] Save the Faculty of Science AI Ethics Statement as report/ai_ethics.tex
+           and recompile.
 [CONFIRM]  Use the Moodle extended-abstract template; keep the main text to
            two pages.
 

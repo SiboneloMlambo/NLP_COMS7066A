@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
+report/*.aux
+report/*.log
+report/*.fls
+report/*.fdb_latexmk
+report/*.out
+report/*.synctex.gz

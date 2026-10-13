@@ -39,6 +39,17 @@ Main study reported in the extended abstract (3 seeds x 2 tasks x 6 generations)
 Tests:
    pytest -q
 
+Leaked-mass analysis and the abstract's figure (after run_study.py):
+   python analyse_leakage.py --config configs/submission.yaml
+   python make_figures.py
+
+Extended abstract (needs a LaTeX installation, e.g. TeX Live or MiKTeX):
+   cd report
+   latexmk -pdf main.tex
+   -> report/main.pdf. Save the official NeurIPS 2024 checklist from Moodle as
+      report/checklist.tex and the Faculty AI Ethics Statement as
+      report/ai_ethics.tex, then recompile; they replace the placeholder boxes.
+
 EXPERIMENT DEFINITION
 ---------------------
 Each example draws a fresh random bijection between 8 symbol tokens and 8
