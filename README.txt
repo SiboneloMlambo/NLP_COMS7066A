@@ -39,8 +39,14 @@ Main study reported in the extended abstract (3 seeds x 2 tasks x 6 generations)
 Tests:
    pytest -q
 
-Leaked-mass analysis and the abstract's figure (after run_study.py):
-   python analyse_leakage.py --config configs/submission.yaml
+Real-data mixing ablation (extended task, half of each generation's labels real):
+   python run_study.py --config configs/mix50.yaml        -> outputs/mix50/
+
+Mechanism analyses and the abstract's figure (after both studies):
+   python analyse_leakage.py   --config configs/submission.yaml
+   python analyse_leakage.py   --config configs/mix50.yaml
+   python analyse_mechanism.py --config configs/submission.yaml   (direct logit attribution)
+   python analyse_mechanism.py --config configs/mix50.yaml
    python make_figures.py
 
 Extended abstract (needs a LaTeX installation, e.g. TeX Live or MiKTeX):

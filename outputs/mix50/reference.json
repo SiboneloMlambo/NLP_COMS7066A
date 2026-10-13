@@ -1,0 +1,11 @@
+{
+  "real_first_value_accuracy": 1.0,
+  "real_symbol_valid": 1.0,
+  "real_symbol_in_context": 1.0,
+  "real_pair_consistency": 1.0,
+  "real_full_correct": 1.0,
+  "real_symbol_entropy": 2.9970664317237192,
+  "real_max_symbol_share": 0.139,
+  "real_symbol_kl_to_uniform": 0.0029335682762806807,
+  "real_mean_relative_position": 0.4163
+}

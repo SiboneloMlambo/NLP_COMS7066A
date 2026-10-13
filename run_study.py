@@ -74,7 +74,7 @@ def main() -> None:
         run_cfg = yaml.safe_load(yaml.safe_dump(cfg))
         run_cfg["seed"] = seed
         seed_dir = root / f"seed_{seed}"
-        for task in ("base", "extended"):
+        for task in cfg.get("tasks", ["base", "extended"]):
             rows = run_task(task, run_cfg, device, seed_dir)
             for row in rows:
                 row["seed"] = seed

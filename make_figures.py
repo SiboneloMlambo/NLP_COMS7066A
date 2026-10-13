@@ -52,18 +52,35 @@ ax = axes[1]
 ext = res[res.task == "extended"].copy()
 ext["error"] = 1 - ext["sampled_pair_consistency"]
 band(ax, ext, "error", EXT, "inconsistent", 100)
-band(ax, leak, "leaked_mass", "#8a3ea8", "unseen-symbol mass", 100, marker="s")
-ax.set(xlabel="Generation", ylabel="% of test examples / prob.",
+band(ax, leak, "leaked_mass", "#8a3ea8", "unseen mass", 100, marker="s")
+MIX = Path("outputs/mix50/all_results.csv")
+if MIX.exists():
+    mix = pd.read_csv(MIX)
+    mix = mix[mix.task == "extended"].copy()
+    mix["error"] = 1 - mix["sampled_pair_consistency"]
+    band(ax, mix, "error", "#3a9a5b", "incons., 50% real", 100, marker="D")
+ax.set(xlabel="Generation", ylabel="% of test examples / prob.", ylim=(0, 7.2),
        title="(b) Ext.: errors vs leaked mass")
 ax.legend(frameon=False, loc="upper left")
 
-# (c) Training-label symbol distribution skews towards particular symbols.
+# (c) Direct logit attribution: the shown-vs-unseen contrast shrinks, mostly in layer 2.
 ax = axes[2]
-band(ax, ext, "trainlabel_max_symbol_share", EXT, "extended", 100)
-ax.axhline(12.5, ls="--", lw=0.8, color=GREY)
-ax.text(5, 12.9, "uniform (1/8)", fontsize=5.5, color=GREY, ha="right")
-ax.set(xlabel="Generation", ylabel="Top symbol share (%)",
-       title="(c) Ext.: label skew")
+dla = pd.read_csv(ROOT / "mechanism_dla.csv")
+dla["group"] = dla.component.map(lambda c: "L1 heads" if c.startswith("L1H") else
+                                 "L2 heads" if c.startswith("L2H") else "other")
+agg = dla.groupby(["seed", "generation", "group"]).unseen_pref.sum().reset_index()
+total = agg.groupby(["seed", "generation"]).unseen_pref.sum().reset_index()
+for frame, color, label, marker in [
+        (total, "black", "total", "o"),
+        (agg[agg.group == "L2 heads"], EXT, "layer-2 heads", "s"),
+        (agg[agg.group == "L1 heads"], BASE, "layer-1 heads", "^"),
+        (agg[agg.group == "other"], GREY, "MLPs + emb.", "x")]:
+    band(ax, frame, "unseen_pref", color, label, -1, marker=marker)
+ax.set(xlabel="Generation", ylabel="Shown$-$unseen logit gap", ylim=(-0.2, 8.8),
+       title="(c) Ext.: logit attribution")
+ax.set_yticks([0, 2, 4, 6])
+ax.legend(frameon=False, loc="upper center", ncol=2, columnspacing=0.6, handlelength=1.5,
+          borderaxespad=0.1)
 
 # (d) Induction attention stays intact in both tasks.
 ax = axes[3]
