@@ -77,7 +77,7 @@ the evaluation distribution cannot collapse along with training.
 METRICS
 -------
 Teacher-forced (clean test): loss, perplexity, token/first-value/exact accuracy.
-  Note: extended exact accuracy has a ceiling of about 0.22, because the next
+  Note: extended exact accuracy has a ceiling of about 0.24, because the next
   symbol is random by design. It is reported but is not a collapse measure.
 Free-running generations (greedy and sampled):
   first_value_accuracy, symbol_in_context, pair_consistency (generated value
@@ -97,11 +97,11 @@ PILOT RUN
 ---------
 outputs/pilot_short_budget/ holds an earlier run with 3,000 training examples
 and early stopping after ~600 steps. It never left the pre-induction plateau:
-~32% accuracy, between the two copy-heuristic baselines (26.5% and 36.1%),
-and induction scores (~0.24) at the uniform-attention baseline (0.27). It is
-kept as evidence that the training budget, not the task, limited those
-results. It was produced with the earlier extended-task design
-(next_symbol_source: any).
+~32% accuracy, between the two copy-heuristic baselines (25.8% and
+36.8%, see outputs/submission/reference.json), and induction scores (~0.24)
+at the uniform-attention baseline (0.27). It is kept as
+evidence that the training budget, not the task, limited those results. It
+was produced with the earlier extended-task design (next_symbol_source: any).
 
 ACADEMIC INTEGRITY
 ------------------

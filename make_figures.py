@@ -52,18 +52,19 @@ ax = axes[1]
 ext = res[res.task == "extended"].copy()
 ext["error"] = 1 - ext["sampled_pair_consistency"]
 band(ax, ext, "error", EXT, "inconsistent", 100)
-band(ax, leak, "leaked_mass", "#8a3ea8", "unseen mass", 100, marker="s")
+band(ax, leak, "leaked_mass", "#8a3ea8", "unshown mass", 100, marker="s")
 MIX = Path("outputs/mix50/all_results.csv")
 if MIX.exists():
     mix = pd.read_csv(MIX)
     mix = mix[mix.task == "extended"].copy()
     mix["error"] = 1 - mix["sampled_pair_consistency"]
     band(ax, mix, "error", "#3a9a5b", "incons., 50% real", 100, marker="D")
-ax.set(xlabel="Generation", ylabel="% of test examples / prob.", ylim=(0, 7.2),
+ax.set(xlabel="Generation", ylabel="% of test examples / prob.", ylim=(0, 10),
        title="(b) Ext.: errors vs leaked mass")
-ax.legend(frameon=False, loc="upper left")
+ax.set_yticks([0, 2, 4, 6])  # headroom keeps the legend clear of the curves
+ax.legend(frameon=False, loc="upper left", handlelength=1.5, borderaxespad=0.1)
 
-# (c) Direct logit attribution: the shown-vs-unseen contrast shrinks, mostly in layer 2.
+# (c) Direct logit attribution: the shown-vs-unshown contrast shrinks, mostly in layer 2.
 ax = axes[2]
 dla = pd.read_csv(ROOT / "mechanism_dla.csv")
 dla["group"] = dla.component.map(lambda c: "L1 heads" if c.startswith("L1H") else
@@ -76,11 +77,11 @@ for frame, color, label, marker in [
         (agg[agg.group == "L1 heads"], BASE, "layer-1 heads", "^"),
         (agg[agg.group == "other"], GREY, "MLPs + emb.", "x")]:
     band(ax, frame, "unseen_pref", color, label, -1, marker=marker)
-ax.set(xlabel="Generation", ylabel="Shown$-$unseen logit gap", ylim=(-0.2, 8.8),
+ax.set(xlabel="Generation", ylabel="Shown$-$unshown logit gap", ylim=(-0.2, 10.5),
        title="(c) Ext.: logit attribution")
 ax.set_yticks([0, 2, 4, 6])
-ax.legend(frameon=False, loc="upper center", ncol=2, columnspacing=0.6, handlelength=1.5,
-          borderaxespad=0.1)
+ax.legend(frameon=False, loc="upper right", ncol=2, columnspacing=0.5, handlelength=1.2,
+          handletextpad=0.3, borderaxespad=0.1)
 
 # (d) Induction attention stays intact in both tasks.
 ax = axes[3]

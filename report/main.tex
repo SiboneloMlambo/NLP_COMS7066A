@@ -7,7 +7,9 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
+\usepackage{xurl} % lets long URLs in the checklist break across lines
 \usepackage{titlesec}
 \usepackage{enumitem}
 \usepackage{caption}
@@ -36,7 +38,7 @@ Induction Heads under Recursive Synthetic Training}
 In-context learning (ICL) lets a Transformer infer a mapping from its prompt without weight updates, and induction heads are a well-understood mechanism for it \citep{olsson2022,singh2024}. Model collapse is the degradation of models trained on earlier models' outputs \citep{shumailov2023,shumailov2024}. We ask whether recursive training damages the ICL \emph{mechanism} or only what the model chooses to produce. On a task with a known circuit we show that (i) a short training budget yields a non-induction heuristic that must be ruled out first; (ii) a fully context-determined target does not collapse; (iii) when the target includes a free choice, collapse appears as a steadily weakening preference for in-context symbols, located mostly in layer-2 heads, while retrieval stays intact; and (iv) mixing in real data bounds the damage, as a simple error-propagation model predicts.
 
 \section{Background}
-In a two-layer induction circuit a layer-1 \emph{previous-token head} copies each token's predecessor into its residual stream, and a layer-2 \emph{induction head} matches the current token against those keys and copies the token that followed \citep{olsson2022}. On this symbol--value task the circuit forms in an abrupt phase transition after a long loss plateau \citep{singh2024}. Recursive training compounds sampling and approximation error, so learned distributions lose their tails and drift \citep{shumailov2023,shumailov2024}. Circuit claims should rest on causal interventions, not attention maps alone \citep{conmy2023}.
+In a two-layer induction circuit a layer-1 \emph{previous-token head} copies each token's predecessor into its residual stream, and a layer-2 \emph{induction head} matches the current token against those keys and copies the token that followed \citep{olsson2022}. On this symbol--value task the circuit forms in an abrupt phase transition after a long loss plateau \citep{singh2024}. Recursive training compounds sampling and approximation error, so learned distributions lose their tails and drift \citep{shumailov2023,shumailov2024}. Circuit claims should rest on causal interventions, not attention maps alone \citep{conmy2023}, and interpretable units can be traced back to the training data that formed them \citep{chen2026}. Under recursion that data is itself model output.
 
 \section{Method}
 \textbf{Task.} Each sequence draws a fresh bijection between 8 symbol and 8 value tokens. The context is \texttt{BOS}, six symbol--value pairs (symbols with replacement) and a query symbol shown earlier. The \emph{base} target is the query's value. The \emph{extended} target adds a next symbol, drawn uniformly from the distinct shown symbols, and its value. Our pilot drew it from all 8 symbols, making its value unknowable in 45\% of cases. The redesign keeps every target inferable and gives the symbol choice a known uniform reference.
@@ -50,7 +52,7 @@ In a two-layer induction circuit a layer-1 \emph{previous-token head} copies eac
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/main_figure.pdf}
-\caption{(a) Generation-0 validation accuracy: with 3k examples training stops on the plateau, while with 50k the induction transition occurs at $\approx$1{,}600--2{,}000 steps. (b) Extended task, $f{=}1$: inconsistent pairs and mass on unshown symbols grow together; with 50\% real labels (green) errors level off. (c) DLA at the choice step ($f{=}1$): the shown$-$unseen logit gap shrinks, mostly in layer-2 heads. (d) Induction attention stays at ceiling; the pilot stayed at the uniform baseline (dashed). Bands: $\pm$1 SD over 3 seeds.}
+\caption{(a) Generation-0 validation accuracy: with 3k examples training stops on the plateau, while with 50k the induction transition occurs at $\approx$1{,}600--2{,}000 steps. (b) Extended task, $f{=}1$: inconsistent pairs and mass on unshown symbols grow together; with 50\% real labels (green) errors level off. (c) DLA at the choice step ($f{=}1$): the shown$-$unshown logit gap shrinks, mostly in layer-2 heads. (d) Induction attention stays at ceiling; the pilot stayed at the uniform baseline (dashed). Bands: $\pm$1 SD over 3 seeds.}
 \label{fig:main}
 \end{figure}
 
@@ -59,9 +61,9 @@ In a two-layer induction circuit a layer-1 \emph{previous-token head} copies eac
 
 \textbf{Base task: no collapse.} All 18 base models score 100\% at every generation, their synthetic labels are $\geq$99.998\% correct, and induction scores stay at 0.90--1.00.
 
-\textbf{Extended task: choice collapses, retrieval does not.} First-value accuracy stays at 100\%, but pair consistency falls by 0.9 points per generation (Fig.~\ref{fig:main}b, Table~\ref{tab:res}). Nearly every failure is an unshown symbol. When the symbol is shown its value is correct in $\geq$99.6\% of cases, and greedy decoding stays 100\% consistent. Leaked mass tracks the errors (0.7\%$\to$4.9\%), and the training labels skew: the top symbol's share rises from 12.7\% to 17.5\%.
+\textbf{Extended task: choice collapses, retrieval does not.} First-value accuracy stays at 100\%, but pair consistency falls by 0.9 points per generation (Fig.~\ref{fig:main}b, Table~\ref{tab:res}). Nearly every failure is an unshown symbol. When the symbol is shown its value is correct in $\geq$99.6\% of cases, and greedy decoding stays 100\% consistent. Leaked mass tracks the errors (0.7\%$\to$4.9\%), and the training labels skew: the top symbol's share rises from 12.7\% to 17.5\%. Clean-test loss shows the same drift more faintly: perplexity rises from 1.645 to 1.699 ($f{=}0.5$: 1.658), against a floor above 1 set by the random next symbol, while base-task perplexity stays at 1.000.
 
-\textbf{Mechanism.} Induction scores (0.97--1.00) and causal ablations (largest single-head drop 9--70 points in every model) show an intact retrieval circuit. DLA shows what changes instead: the total logit gap favouring shown symbols shrinks from $5.26\pm0.19$ to $3.04\pm0.11$, monotonically in every seed. The layer-2 heads account for 78\% of this ($3.22\to1.49$), layer-1 heads change less and less consistently ($1.98\to1.60$), and MLPs and embeddings contribute almost nothing (Fig.~\ref{fig:main}c). No component's symbol-specific bias grows, so the skew reflects leaked mass flowing to pre-existing preferences rather than a new symbol prior.
+\textbf{Mechanism.} Induction scores (0.97--1.00) and causal ablations (largest single-head drop 9--70 points in every model) show an intact retrieval circuit. DLA shows what changes instead: the total logit gap favouring shown symbols shrinks from $5.26\pm0.19$ to $3.04\pm0.11$, monotonically in every seed. The layer-2 heads account for 78\% of this ($3.22\to1.49$), layer-1 heads change less and less consistently ($1.98\to1.60$), and MLPs and embeddings contribute almost nothing (Fig.~\ref{fig:main}c). Token embeddings give a shown$-$unshown gap below 0.01 logits in every generation, and the spread of their per-symbol bias does not grow (SD 0.12--0.24), so the leak is not stored in how symbols are embedded. No component's symbol-specific bias grows, so the skew reflects leaked mass flowing to pre-existing preferences rather than a new symbol prior.
 
 \textbf{Mixing real data.} With $f{=}0.5$, consistency settles at 98.1--98.5\% from generation~2 onwards, leaked mass at 1.7--1.8\% and the logit gap at 4.2--4.3. Generation~0 is identical in both runs, confirming the comparison is controlled.
 
@@ -91,6 +93,7 @@ A context-determined lookup is a fixed point of recursion: a perfect model emits
 
 \clearpage
 \begin{thebibliography}{9}\small
+\bibitem{chen2026} J.~Chen, Y.~Luo, and L.~Pan. Mechanistic data attribution: Tracing the training origins of interpretable LLM units. \emph{arXiv preprint arXiv:2601.21996}, 2026.
 \bibitem{conmy2023} A.~Conmy, A.~Mavor-Parker, A.~Lynch, S.~Heimersheim, and A.~Garriga-Alonso. Towards automated circuit discovery for mechanistic interpretability. \emph{Advances in Neural Information Processing Systems}, 36:16318--16352, 2023.
 \bibitem{olsson2022} C.~Olsson, N.~Elhage, N.~Nanda, N.~Joseph, N.~DasSarma, T.~Henighan, B.~Mann, A.~Askell, Y.~Bai, A.~Chen, et~al. In-context learning and induction heads. \emph{arXiv preprint arXiv:2209.11895}, 2022.
 \bibitem{shumailov2023} I.~Shumailov, Z.~Shumaylov, Y.~Zhao, Y.~Gal, N.~Papernot, and R.~Anderson. The curse of recursion: Training on generated data makes models forget. \emph{arXiv preprint arXiv:2305.17493}, 2023.
@@ -102,7 +105,10 @@ A context-determined lookup is a fixed point of recursion: a perfect model emits
 This is an individual submission. Sibonelo Mlambo (536187) carried out the experimental design, implementation, experiments, analysis, figures and writing.
 
 \section*{Code and reproducibility}
-Code, configurations, raw results and checkpoints accompany the submission. \texttt{tune.py} reproduces the hyper-parameter selection, \texttt{run\_study.py} the main study, \texttt{analyse\_leakage.py} and \texttt{analyse\_mechanism.py} the leaked-mass and attribution analyses, \texttt{configs/mix50.yaml} the mixing run, and \texttt{make\_figures.py} Figure~\ref{fig:main}.
+Code, configurations, raw results and checkpoints accompany the submission. \texttt{tune.py} reproduces the hyper-parameter selection, \texttt{run\_study.py} the main study, \texttt{analyse\_leakage.py} and \texttt{analyse\_mechanism.py} the leaked-mass and attribution analyses, \texttt{configs/mix50.yaml} the mixing run, and \texttt{make\_figures.py} Figure~\ref{fig:main}. All experiments ran on CPU without a GPU. The main study (3 seeds $\times$ 2 tasks $\times$ 6 generations, 36 training runs on 50k sequences) takes about 2--2.5 hours on a 2-core CPU. The other reported experiments add 18 runs for the mixing ablation (extended task only), 6 runs for the tuning grid (three of them on 3k sequences) and 36 runs for the pilot on 3k sequences.
+
+\section*{Broader impact}
+Recursive training on generated data is a growing concern as model outputs enter training corpora. Our results suggest a practical lesson: collapse can grow while accuracy, greedy outputs and the underlying circuit all look intact, so monitoring should include distributional metrics on sampled outputs, and retaining real data limits the damage. The models are tiny and trained on synthetic tokens, so we see no direct path to misuse; the main risk is over-generalising these small-scale findings to production language models, which the limitations above caution against.
 
 % ---- NeurIPS 2024 checklist: save the official file from Moodle as report/checklist.tex ----
 \clearpage
