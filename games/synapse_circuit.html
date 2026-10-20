@@ -1,0 +1,651 @@
+<title>Synapse Circuit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one centred column. A menu of three training rooms; each opens into a focused stage with a HUD strip on top. */
+:root {
+  --bg: #EDF0F7;
+  --surface: #FFFFFF;
+  --ink: #141B33;
+  --muted: #5A6386;
+  --line: #D5DAE8;
+  --accent: #3A4BE0;
+  --accent-ink: #FFFFFF;
+  --spark: #E89A0C;
+  --good: #1F9D62;
+  --bad: #D93F4C;
+  --cell: #DDE2F0;
+  --c-red: #D93F4C;
+  --c-blue: #3561E0;
+  --c-green: #1F9D62;
+  --c-yellow: #D49500;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1324; --surface: #181D33; --ink: #E8EBF7; --muted: #9AA2C4; --line: #2A3152;
+    --accent: #7D8BFF; --accent-ink: #0F1324; --spark: #FFC14D; --good: #3DD68C; --bad: #FF6B76;
+    --cell: #232A47; --c-red: #FF6B76; --c-blue: #6E8EFF; --c-green: #3DD68C; --c-yellow: #FFD23F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1324; --surface: #181D33; --ink: #E8EBF7; --muted: #9AA2C4; --line: #2A3152;
+  --accent: #7D8BFF; --accent-ink: #0F1324; --spark: #FFC14D; --good: #3DD68C; --bad: #FF6B76;
+  --cell: #232A47; --c-red: #FF6B76; --c-blue: #6E8EFF; --c-green: #3DD68C; --c-yellow: #FFD23F;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.app { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+.label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 { font-size: clamp(20px, 4vw, 28px); font-weight: 700; }
+.mark { width: 30px; height: 30px; position: relative; flex: none; }
+.mark::before, .mark::after { content: ""; position: absolute; border-radius: 50%; }
+.mark::before { inset: 0; border: 3px solid var(--accent); }
+.mark::after { width: 10px; height: 10px; background: var(--spark); top: 10px; left: 10px; box-shadow: 0 0 0 0 var(--spark); animation: pulse 2.4s ease-out infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--spark) 60%, transparent); } 70%, 100% { box-shadow: 0 0 0 10px transparent; } }
+.meter { display: flex; flex-direction: column; align-items: flex-end; }
+.meter .num { font-size: 22px; font-weight: 700; color: var(--accent); }
+
+/* Buttons */
+.btn {
+  font: 600 15px/1 var(--body); border-radius: 10px; padding: 12px 18px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+  transition: transform .12s ease, background .15s ease, border-color .15s ease;
+}
+.btn:hover { border-color: var(--accent); }
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--muted); padding-inline: 8px; }
+.btn.ghost:hover { color: var(--ink); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+:focus-visible { outline: 3px solid var(--spark); outline-offset: 2px; }
+
+/* Menu */
+.lede { font-size: 18px; color: var(--muted); max-width: 62ch; }
+.rooms { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .rooms { grid-template-columns: 1fr; } }
+.room {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+  padding: 18px; display: flex; flex-direction: column; gap: 14px;
+}
+.room-art {
+  height: 120px; border-radius: 12px; background: var(--bg);
+  display: grid; place-items: center; overflow: hidden;
+}
+.room-meta { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.room-meta h2 { font-size: 20px; font-weight: 700; }
+.room-meta p { color: var(--muted); font-size: 15px; }
+.skill { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; color: var(--accent); }
+.room-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.best { color: var(--muted); font-size: 14px; }
+.best b { font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.tip { font-size: 14px; color: var(--muted); }
+
+/* Room previews */
+.mini-grid { display: grid; grid-template-columns: repeat(4, 18px); gap: 5px; }
+.mini-grid i { width: 18px; height: 18px; border-radius: 4px; background: var(--cell); }
+.mini-grid i.on { background: var(--accent); }
+.mini-clash { font: 700 30px/1 var(--display); color: var(--c-red); letter-spacing: 0.02em; }
+.mini-target { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mini-target .t { font: 700 34px/1 var(--mono); color: var(--spark); }
+.mini-target .ns { display: flex; gap: 6px; }
+.mini-target .ns span { font: 700 14px/1 var(--mono); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+
+/* Stage */
+.stage { display: flex; flex-direction: column; gap: 18px; }
+.stage-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.stage-bar h2 { font-size: 22px; }
+.hud {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+  background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+}
+.hud > div { background: var(--surface); padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hud b { font: 700 20px/1.2 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.status { font-size: 17px; font-weight: 600; min-height: 1.5em; text-align: center; }
+.status.good { color: var(--good); }
+.status.bad { color: var(--bad); }
+.actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.game { display: flex; flex-direction: column; gap: 18px; }
+
+/* Recall */
+.grid {
+  --n: 3;
+  width: min(100%, 420px); aspect-ratio: 1; margin: 0 auto; max-width: 100%;
+  display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: clamp(5px, 1.4vw, 10px);
+}
+.cell {
+  border: 0; border-radius: 12px; background: var(--cell); cursor: pointer; padding: 0;
+  transition: background .18s ease, transform .18s ease;
+}
+.cell:hover { filter: brightness(1.04); }
+.cell.lit { background: var(--accent); transform: scale(1.04); }
+.cell.hit { background: var(--good); }
+.cell.miss { background: var(--bad); animation: shake .3s; }
+.cell.reveal { background: transparent; box-shadow: inset 0 0 0 3px var(--accent); }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+/* Clash */
+.timebar { height: 6px; border-radius: 3px; background: var(--cell); overflow: hidden; }
+.timebar i { display: block; height: 100%; width: 100%; background: var(--accent); transition: width .1s linear; }
+.clash-card {
+  background: var(--surface); border: 2px solid var(--line); border-radius: 18px;
+  min-height: 210px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  padding: 20px; transition: border-color .2s;
+}
+.clash-card.rule-word { border-style: dashed; border-color: var(--spark); }
+.rule {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 6px 12px; border-radius: 999px; background: var(--accent); color: var(--accent-ink);
+}
+.rule-word .rule { background: var(--spark); color: #1A1300; }
+.rule.flip { animation: pop .35s; }
+@keyframes pop { 50% { transform: scale(1.18); } }
+.clash-word { font: 700 clamp(40px, 11vw, 72px)/1 var(--display); letter-spacing: 0.02em; }
+.clash-card.flash-good { border-color: var(--good); }
+.clash-card.flash-bad { border-color: var(--bad); }
+.swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 480px) { .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.swatch {
+  display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 10px;
+  border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+  font: 700 15px/1 var(--body); letter-spacing: 0.06em; cursor: pointer;
+}
+.swatch:hover { border-color: var(--ink); }
+.swatch i { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.swatch kbd { font: 500 11px/1 var(--mono); color: var(--muted); }
+
+/* Target */
+.target-head { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.target-num { font: 700 clamp(52px, 13vw, 80px)/1 var(--mono); color: var(--spark); font-variant-numeric: tabular-nums; }
+.tiles { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 84px; }
+.tile {
+  min-width: 76px; height: 76px; padding: 0 12px; border-radius: 14px;
+  border: 2px solid var(--line); background: var(--surface); color: var(--ink);
+  font: 700 26px/1 var(--mono); cursor: pointer; transition: transform .12s, border-color .12s, background .12s;
+}
+.tile:hover { border-color: var(--accent); }
+.tile.sel { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); transform: translateY(-3px); }
+.tile.win { border-color: var(--good); background: var(--good); color: var(--surface); }
+.ops { display: flex; justify-content: center; gap: 10px; }
+.op {
+  width: 60px; height: 52px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface);
+  color: var(--ink); font: 700 24px/1 var(--mono); cursor: pointer;
+}
+.op.sel { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.trail { font: 500 14px/1.4 var(--mono); color: var(--muted); text-align: center; min-height: 1.4em; overflow-wrap: anywhere; }
+
+/* Result */
+.result {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+  padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+}
+.result .big { font: 700 64px/1 var(--mono); color: var(--accent); }
+.result .newbest { color: var(--spark); font-weight: 700; }
+.result .detail { color: var(--muted); max-width: 46ch; }
+
+@media (max-width: 480px) {
+  .hud { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tile { min-width: 64px; height: 64px; font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="mark" aria-hidden="true"></span><h1>Synapse Circuit</h1></div>
+    <div class="meter"><span class="label">Points this session</span><span id="sessionPts" class="num">0</span></div>
+  </header>
+
+  <main id="menu" class="menu app">
+    <p class="lede">Three short drills, each aimed at a different mental skill. Play in any order. Each one gets harder as you improve.</p>
+    <div class="rooms">
+      <article class="room">
+        <div class="room-art" aria-hidden="true">
+          <div class="mini-grid"><i class="on"></i><i></i><i></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="room-meta">
+          <span class="skill">Working memory</span>
+          <h2>Recall</h2>
+          <p>Cells light up, then go dark. Tap them back from memory. Get it right and the pattern grows by one.</p>
+        </div>
+        <div class="room-foot"><span class="best">Best <b id="best-recall">–</b></span><button class="btn primary" data-play="recall">Play</button></div>
+      </article>
+      <article class="room">
+        <div class="room-art" aria-hidden="true"><span class="mini-clash">BLUE</span></div>
+        <div class="room-meta">
+          <span class="skill">Focus and switching</span>
+          <h2>Clash</h2>
+          <p>Pick the ink colour or the word itself, depending on the rule. The rule flips without warning. 45 seconds.</p>
+        </div>
+        <div class="room-foot"><span class="best">Best <b id="best-clash">–</b></span><button class="btn primary" data-play="clash">Play</button></div>
+      </article>
+      <article class="room">
+        <div class="room-art" aria-hidden="true">
+          <div class="mini-target"><span class="t">24</span><span class="ns"><span>3</span><span>8</span><span>1</span><span>6</span></span></div>
+        </div>
+        <div class="room-meta">
+          <span class="skill">Reasoning</span>
+          <h2>Target</h2>
+          <p>Combine four numbers with + − × ÷ to hit the target. Solve as many as you can in two minutes.</p>
+        </div>
+        <div class="room-foot"><span class="best">Best <b id="best-target">–</b></span><button class="btn primary" data-play="target">Play</button></div>
+      </article>
+    </div>
+    <p class="tip">Try one round of each every day. Best scores are saved in this browser.</p>
+  </main>
+
+  <section id="stage" class="stage" hidden>
+    <div class="stage-bar">
+      <button class="btn ghost" id="backBtn">← All drills</button>
+      <h2 id="stageTitle">Recall</h2>
+    </div>
+
+    <!-- Recall -->
+    <div class="game" id="g-recall" hidden>
+      <div class="hud">
+        <div><span class="label">Level</span><b id="rLevel">1</b></div>
+        <div><span class="label">Cells</span><b id="rCells">3</b></div>
+        <div><span class="label">Lives</span><b id="rLives">3</b></div>
+        <div><span class="label">Score</span><b id="rScore">0</b></div>
+      </div>
+      <p class="status" id="rStatus" aria-live="polite">Press Start, then watch the grid.</p>
+      <div class="grid" id="rGrid"></div>
+      <div class="actions"><button class="btn primary" id="rStart">Start</button></div>
+    </div>
+
+    <!-- Clash -->
+    <div class="game" id="g-clash" hidden>
+      <div class="hud">
+        <div><span class="label">Time</span><b id="cTime">45.0</b></div>
+        <div><span class="label">Streak</span><b id="cStreak">0</b></div>
+        <div><span class="label">Multiplier</span><b id="cMult">×1</b></div>
+        <div><span class="label">Score</span><b id="cScore">0</b></div>
+      </div>
+      <div class="timebar"><i id="cBar"></i></div>
+      <div class="clash-card" id="cCard">
+        <span class="rule" id="cRule">Pick the ink colour</span>
+        <div class="clash-word" id="cWord" aria-live="polite">READY</div>
+      </div>
+      <div class="swatches" id="cSwatches"></div>
+      <div class="actions"><button class="btn primary" id="cStart">Start</button></div>
+      <p class="tip" style="text-align:center">Keys 1–4 work too. Every 5 in a row raises your multiplier. A miss costs a point.</p>
+    </div>
+
+    <!-- Target -->
+    <div class="game" id="g-target" hidden>
+      <div class="hud">
+        <div><span class="label">Time</span><b id="tTime">2:00</b></div>
+        <div><span class="label">Solved</span><b id="tSolved">0</b></div>
+        <div><span class="label">Range</span><b id="tRange">1–9</b></div>
+        <div><span class="label">Score</span><b id="tScore">0</b></div>
+      </div>
+      <div class="target-head"><span class="label">Make</span><span class="target-num" id="tTarget">24</span></div>
+      <div class="tiles" id="tTiles"></div>
+      <div class="ops" id="tOps"></div>
+      <p class="trail" id="tTrail">Tap a number, an operator, then another number.</p>
+      <p class="status" id="tStatus" aria-live="polite"></p>
+      <div class="actions">
+        <button class="btn" id="tUndo">Undo</button>
+        <button class="btn" id="tReset">Reset</button>
+        <button class="btn" id="tSkip">Skip (−10s)</button>
+        <button class="btn primary" id="tStart">Start</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result" id="result" hidden>
+      <span class="label" id="resLabel">Round over</span>
+      <span class="big num" id="resScore">0</span>
+      <span class="newbest" id="resBest" hidden>New best score</span>
+      <p class="detail" id="resDetail"></p>
+      <div class="actions"><button class="btn primary" id="resAgain">Play again</button><button class="btn" id="resBack">All drills</button></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const rand = n => Math.floor(Math.random() * n);
+  const timers = new Set();
+  const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; };
+  const clearAll = () => { timers.forEach(clearTimeout); timers.clear(); };
+
+  // ---------- Storage ----------
+  const KEY = "synapse-circuit-bests";
+  let bests = {};
+  try { bests = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { bests = {}; }
+  const saveBests = () => { try { localStorage.setItem(KEY, JSON.stringify(bests)); } catch (e) {} };
+  const showBests = () => ["recall", "clash", "target"].forEach(g => { $("best-" + g).textContent = bests[g] ?? "–"; });
+  showBests();
+  let session = 0;
+
+  // ---------- Navigation ----------
+  const TITLES = { recall: "Recall", clash: "Clash", target: "Target" };
+  let current = null;
+  function open(game) {
+    stopAll();
+    current = game;
+    $("menu").hidden = true; $("stage").hidden = false; $("result").hidden = true;
+    $("stageTitle").textContent = TITLES[game];
+    ["recall", "clash", "target"].forEach(g => { $("g-" + g).hidden = g !== game; });
+    ({ recall: rReset, clash: cReset, target: tReset })[game]();
+    window.scrollTo({ top: 0 });
+  }
+  function home() { stopAll(); current = null; $("stage").hidden = true; $("menu").hidden = false; showBests(); }
+  function stopAll() { clearAll(); clearInterval(cTick); clearInterval(tTick); C.running = false; T.running = false; }
+  function finish(game, score, detail) {
+    stopAll();
+    session += score; $("sessionPts").textContent = session;
+    const isBest = score > 0 && score > (bests[game] ?? 0);
+    if (isBest) { bests[game] = score; saveBests(); }
+    $("g-" + game).hidden = true;
+    $("resScore").textContent = score;
+    $("resBest").hidden = !isBest;
+    $("resDetail").textContent = detail;
+    $("result").hidden = false;
+  }
+  document.querySelectorAll("[data-play]").forEach(b => b.addEventListener("click", () => open(b.dataset.play)));
+  $("backBtn").addEventListener("click", home);
+  $("resBack").addEventListener("click", home);
+  $("resAgain").addEventListener("click", () => { open(current); ({ recall: rStart, clash: cStart, target: tStart })[current](); });
+
+  // ---------- Recall ----------
+  const R = { level: 1, cells: 3, lives: 3, score: 0, size: 3, best: 0, pattern: new Set(), found: new Set(), phase: "idle" };
+  const sizeFor = c => c <= 4 ? 3 : c <= 7 ? 4 : c <= 11 ? 5 : 6;
+  function rHud() {
+    $("rLevel").textContent = R.level; $("rCells").textContent = R.cells;
+    $("rLives").textContent = "●".repeat(R.lives) + "○".repeat(3 - R.lives); $("rScore").textContent = R.score;
+  }
+  function rStatus(msg, cls = "") { const s = $("rStatus"); s.textContent = msg; s.className = "status " + cls; }
+  function rBuild() {
+    const g = $("rGrid"); g.style.setProperty("--n", R.size); g.innerHTML = "";
+    for (let i = 0; i < R.size * R.size; i++) {
+      const b = document.createElement("button");
+      b.className = "cell"; b.dataset.i = i; b.setAttribute("aria-label", "Cell " + (i + 1));
+      g.appendChild(b);
+    }
+  }
+  function rReset() {
+    Object.assign(R, { level: 1, cells: 3, lives: 3, score: 0, best: 0, phase: "idle" });
+    R.size = 3; rBuild(); rHud(); rStatus("Press Start, then watch the grid.");
+    $("rStart").hidden = false;
+  }
+  function rStart() { rReset(); $("rStart").hidden = true; rRound(); }
+  function rRound() {
+    R.size = sizeFor(R.cells); rBuild(); rHud();
+    R.pattern = new Set(); R.found = new Set();
+    while (R.pattern.size < R.cells) R.pattern.add(rand(R.size * R.size));
+    R.phase = "show"; rStatus("Memorise…");
+    const cells = $("rGrid").children;
+    later(() => { R.pattern.forEach(i => cells[i].classList.add("lit")); }, 450);
+    later(() => {
+      R.pattern.forEach(i => cells[i].classList.remove("lit"));
+      R.phase = "input"; rStatus("Tap the " + R.cells + " cells.");
+    }, 450 + 800 + R.cells * 220);
+  }
+  $("rGrid").addEventListener("click", e => {
+    const c = e.target.closest(".cell"); if (!c || R.phase !== "input") return;
+    const i = +c.dataset.i; if (R.found.has(i)) return;
+    if (R.pattern.has(i)) {
+      R.found.add(i); c.classList.add("hit");
+      if (R.found.size === R.pattern.size) {
+        R.phase = "wait"; R.score += R.cells * 10; R.best = Math.max(R.best, R.cells);
+        R.level++; R.cells++; rHud(); rStatus("Correct. One more cell next time.", "good");
+        later(rRound, 850);
+      }
+    } else {
+      R.phase = "wait"; c.classList.add("miss");
+      const cells = $("rGrid").children;
+      R.pattern.forEach(p => { if (!R.found.has(p)) cells[p].classList.add("reveal"); });
+      R.lives--; rHud();
+      if (R.lives === 0) {
+        rStatus("Out of lives.", "bad");
+        later(() => finish("recall", R.score, "Longest pattern held: " + (R.best || 0) + " cells. Most adults land around 6 to 8."), 1300);
+      } else {
+        R.cells = Math.max(3, R.cells - 1);
+        rStatus("Not quite. The outlined cells were the rest.", "bad");
+        later(rRound, 1600);
+      }
+    }
+  });
+  $("rStart").addEventListener("click", rStart);
+
+  // ---------- Clash ----------
+  const COLORS = [
+    { k: "red", name: "RED" }, { k: "blue", name: "BLUE" },
+    { k: "green", name: "GREEN" }, { k: "yellow", name: "YELLOW" }
+  ];
+  const C = { running: false, end: 0, score: 0, streak: 0, rule: "ink", word: 0, ink: 0, n: 0, right: 0, wrong: 0, flips: 0 };
+  let cTick = null;
+  const sw = $("cSwatches");
+  COLORS.forEach((c, idx) => {
+    const b = document.createElement("button");
+    b.className = "swatch"; b.dataset.k = idx;
+    b.innerHTML = `<i style="background:var(--c-${c.k})"></i>${c.name}<kbd>${idx + 1}</kbd>`;
+    b.addEventListener("click", () => cAnswer(idx));
+    sw.appendChild(b);
+  });
+  const mult = () => Math.min(4, 1 + Math.floor(C.streak / 5));
+  function cHud() {
+    $("cStreak").textContent = C.streak; $("cMult").textContent = "×" + mult(); $("cScore").textContent = C.score;
+  }
+  function cSetRule(rule, animate) {
+    C.rule = rule;
+    $("cCard").classList.toggle("rule-word", rule === "word");
+    const r = $("cRule"); r.textContent = rule === "ink" ? "Pick the ink colour" : "Pick the word";
+    if (animate) { r.classList.remove("flip"); void r.offsetWidth; r.classList.add("flip"); }
+  }
+  function cReset() {
+    Object.assign(C, { running: false, score: 0, streak: 0, n: 0, right: 0, wrong: 0, flips: 0 });
+    cSetRule("ink", false); cHud();
+    $("cTime").textContent = "45.0"; $("cBar").style.width = "100%";
+    const w = $("cWord"); w.textContent = "READY"; w.style.color = "var(--ink)";
+    $("cStart").hidden = false;
+  }
+  function cNext() {
+    C.n++;
+    if (C.n > 4 && Math.random() < 0.28) { cSetRule(C.rule === "ink" ? "word" : "ink", true); C.flips++; }
+    C.word = rand(4);
+    C.ink = Math.random() < 0.8 ? (C.word + 1 + rand(3)) % 4 : C.word;
+    const w = $("cWord"); w.textContent = COLORS[C.word].name; w.style.color = `var(--c-${COLORS[C.ink].k})`;
+  }
+  function cFlash(cls) {
+    const card = $("cCard"); card.classList.remove("flash-good", "flash-bad"); card.classList.add(cls);
+    later(() => card.classList.remove(cls), 180);
+  }
+  function cAnswer(idx) {
+    if (!C.running) return;
+    const want = C.rule === "ink" ? C.ink : C.word;
+    if (idx === want) { C.streak++; C.score += mult(); C.right++; cFlash("flash-good"); }
+    else { C.streak = 0; C.score = Math.max(0, C.score - 1); C.wrong++; cFlash("flash-bad"); }
+    cHud(); cNext();
+  }
+  function cStart() {
+    cReset(); $("cStart").hidden = true; C.running = true; C.end = performance.now() + 45000; cNext();
+    cTick = setInterval(() => {
+      const left = Math.max(0, C.end - performance.now());
+      $("cTime").textContent = (left / 1000).toFixed(1);
+      $("cBar").style.width = (left / 450) + "%";
+      if (left <= 0) {
+        const acc = C.right + C.wrong ? Math.round(100 * C.right / (C.right + C.wrong)) : 0;
+        finish("clash", C.score, `${C.right} correct, ${C.wrong} missed (${acc}% accuracy). The rule flipped ${C.flips} times.`);
+      }
+    }, 100);
+  }
+  $("cStart").addEventListener("click", cStart);
+  document.addEventListener("keydown", e => {
+    if (current === "clash" && C.running && e.key >= "1" && e.key <= "4") { e.preventDefault(); cAnswer(+e.key - 1); }
+  });
+
+  // ---------- Target ----------
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  const Q = (n, d = 1) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return { n: n / g, d: d / g }; };
+  const add = (a, b) => Q(a.n * b.d + b.n * a.d, a.d * b.d);
+  const sub = (a, b) => Q(a.n * b.d - b.n * a.d, a.d * b.d);
+  const mul = (a, b) => Q(a.n * b.n, a.d * b.d);
+  const div = (a, b) => b.n === 0 ? null : Q(a.n * b.d, a.d * b.n);
+  const OPS = { "+": add, "−": sub, "×": mul, "÷": div };
+  const fmt = q => q.d === 1 ? String(q.n) : q.n + "/" + q.d;
+
+  // Every integer reachable using all numbers, with one expression for each.
+  function reachable(nums) {
+    const found = new Map();
+    (function go(items) {
+      if (items.length === 1) {
+        const it = items[0];
+        if (it.v.d === 1 && !found.has(it.v.n)) found.set(it.v.n, it.e);
+        return;
+      }
+      for (let i = 0; i < items.length; i++) for (let j = i + 1; j < items.length; j++) {
+        const a = items[i], b = items[j];
+        const rest = items.filter((_, k) => k !== i && k !== j);
+        const cands = [
+          [add(a.v, b.v), `(${a.e} + ${b.e})`], [sub(a.v, b.v), `(${a.e} − ${b.e})`],
+          [sub(b.v, a.v), `(${b.e} − ${a.e})`], [mul(a.v, b.v), `(${a.e} × ${b.e})`],
+          [div(a.v, b.v), `(${a.e} ÷ ${b.e})`], [div(b.v, a.v), `(${b.e} ÷ ${a.e})`]
+        ];
+        for (const [v, e] of cands) if (v) go([...rest, { v, e }]);
+      }
+    })(nums.map(n => ({ v: Q(n), e: String(n) })));
+    return found;
+  }
+  const strip = e => e.startsWith("(") && e.endsWith(")") ? e.slice(1, -1) : e;
+
+  const T = { running: false, end: 0, solved: 0, score: 0, skips: 0, target: 24, start: [], tiles: [], hist: [], sel: null, op: null, solution: "", locked: false };
+  let tTick = null;
+  const maxN = () => T.solved < 3 ? 9 : T.solved < 7 ? 12 : 13;
+  const opsBox = $("tOps");
+  Object.keys(OPS).forEach(sym => {
+    const b = document.createElement("button");
+    b.className = "op"; b.textContent = sym; b.dataset.op = sym; b.setAttribute("aria-label", { "+": "plus", "−": "minus", "×": "times", "÷": "divide" }[sym]);
+    b.addEventListener("click", () => tPickOp(sym));
+    opsBox.appendChild(b);
+  });
+  function tStatus(msg, cls = "") { const s = $("tStatus"); s.textContent = msg; s.className = "status " + cls; }
+  function tHud() {
+    $("tSolved").textContent = T.solved; $("tScore").textContent = T.score; $("tRange").textContent = "1–" + maxN();
+  }
+  function tRender() {
+    const box = $("tTiles"); box.innerHTML = "";
+    T.tiles.forEach((t, idx) => {
+      const b = document.createElement("button");
+      b.className = "tile" + (T.sel === idx ? " sel" : "");
+      b.textContent = fmt(t.v);
+      b.addEventListener("click", () => tPickTile(idx));
+      box.appendChild(b);
+    });
+    opsBox.querySelectorAll(".op").forEach(o => o.classList.toggle("sel", o.dataset.op === T.op));
+    $("tTarget").textContent = T.target;
+  }
+  function tNewPuzzle() {
+    let nums, reach, target;
+    for (let tries = 0; tries < 200; tries++) {
+      nums = Array.from({ length: 4 }, () => 1 + rand(maxN()));
+      reach = reachable(nums);
+      const pool = [...reach.keys()].filter(k => k >= 10 && k <= 99 && !nums.includes(k));
+      if (reach.has(24) && Math.random() < 0.35) { target = 24; break; }
+      if (pool.length) { target = pool[rand(pool.length)]; break; }
+    }
+    T.target = target; T.start = nums; T.solution = strip(reach.get(target));
+    T.tiles = nums.map(n => ({ v: Q(n), e: String(n) })); T.hist = []; T.sel = null; T.op = null; T.locked = false;
+    $("tTrail").textContent = "Tap a number, an operator, then another number.";
+    tStatus(""); tRender(); tHud();
+  }
+  function tPickTile(idx) {
+    if (!T.running || T.locked) return;
+    if (T.sel === null) { T.sel = idx; tRender(); return; }
+    if (T.sel === idx) { T.sel = null; T.op = null; tRender(); return; }
+    if (!T.op) { T.sel = idx; tRender(); return; }
+    const a = T.tiles[T.sel], b = T.tiles[idx];
+    const v = OPS[T.op](a.v, b.v);
+    if (!v) { tStatus("You can't divide by zero.", "bad"); return; }
+    T.hist.push(T.tiles.map(t => ({ ...t })));
+    const e = `(${a.e} ${T.op} ${b.e})`;
+    T.tiles[idx] = { v, e };
+    T.tiles.splice(T.sel, 1);
+    T.sel = null; T.op = null;
+    $("tTrail").textContent = strip(e) + " = " + fmt(v);
+    tStatus("");
+    tRender();
+    if (T.tiles.length === 1) {
+      const last = T.tiles[0].v;
+      if (last.d === 1 && last.n === T.target) {
+        T.locked = true; T.solved++; T.score += 10 + (T.start.some(n => n > 9) ? 5 : 0);
+        tHud(); tStatus("Solved.", "good");
+        $("tTiles").firstChild.classList.add("win");
+        later(tNewPuzzle, 900);
+      } else {
+        tStatus(`That makes ${fmt(last)}, not ${T.target}. Undo or reset.`, "bad");
+      }
+    }
+  }
+  function tPickOp(sym) {
+    if (!T.running || T.locked) return;
+    if (T.sel === null) { tStatus("Pick a number first.", ""); return; }
+    T.op = T.op === sym ? null : sym; tRender();
+  }
+  function tReset() {
+    stopTarget();
+    Object.assign(T, { running: false, solved: 0, score: 0, skips: 0 });
+    T.target = 24; T.tiles = [3, 8, 1, 6].map(n => ({ v: Q(n), e: String(n) })); T.sel = null; T.op = null;
+    $("tTime").textContent = "2:00"; $("tTrail").textContent = "Tap a number, an operator, then another number.";
+    tStatus("Example: (6 − 3) × 8 × 1 = 24. Press Start for real puzzles.");
+    tRender(); tHud(); $("tStart").hidden = false;
+  }
+  function stopTarget() { clearInterval(tTick); }
+  function tStart() {
+    tReset(); $("tStart").hidden = true; T.running = true; T.end = performance.now() + 120000; tNewPuzzle();
+    tTick = setInterval(() => {
+      const left = Math.max(0, T.end - performance.now());
+      const s = Math.ceil(left / 1000);
+      $("tTime").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+      if (left <= 0) finish("target", T.score, `${T.solved} solved, ${T.skips} skipped. Last answer: ${T.solution} = ${T.target}.`);
+    }, 200);
+  }
+  $("tStart").addEventListener("click", tStart);
+  $("tUndo").addEventListener("click", () => {
+    if (!T.running || T.locked || !T.hist.length) return;
+    T.tiles = T.hist.pop(); T.sel = null; T.op = null; tStatus(""); $("tTrail").textContent = " "; tRender();
+  });
+  $("tReset").addEventListener("click", () => {
+    if (!T.running || T.locked) return;
+    T.tiles = T.start.map(n => ({ v: Q(n), e: String(n) })); T.hist = []; T.sel = null; T.op = null; tStatus(""); tRender();
+  });
+  $("tSkip").addEventListener("click", () => {
+    if (!T.running || T.locked) return;
+    T.locked = true; T.skips++; T.end -= 10000;
+    tStatus(`One answer: ${T.solution} = ${T.target}`, "");
+    later(tNewPuzzle, 2200);
+  });
+
+  // Start on the menu with an example Recall grid ready behind it.
+  rReset();
+})();
+</script>
