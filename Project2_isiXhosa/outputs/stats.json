@@ -1,0 +1,291 @@
+{
+  "n_segments": {
+    "IMVO": 6699,
+    "ISIG": 1509
+  },
+  "n_issues": {
+    "IMVO": 211,
+    "ISIG": 38
+  },
+  "n_tokens_raw": {
+    "IMVO": 1299755,
+    "ISIG": 288313
+  },
+  "n_probe_segments": 4690,
+  "n_probe_issues": 107,
+  "segments_by_year": {
+    "IMVO": {
+      "1884": 227,
+      "1885": 1397,
+      "1886": 1564,
+      "1887": 1606,
+      "1888": 1905
+    },
+    "ISIG": {
+      "1884": 79,
+      "1885": 467,
+      "1886": 0,
+      "1887": 483,
+      "1888": 480
+    }
+  },
+  "dupinfo": {
+    "xh": {
+      "dup_removed": 558,
+      "dup_removed_test": 277,
+      "n_eval": 2512
+    },
+    "full": {
+      "dup_removed": 601,
+      "dup_removed_test": 297,
+      "n_eval": 3366
+    }
+  },
+  "shared_vocab_size": 3485,
+  "matching": {
+    "n_pairs": 134,
+    "caliper": 1.8290358499840673,
+    "mean_abs_smd_before": 0.28827477853894895,
+    "mean_abs_smd_after": 0.08250088089645137,
+    "n_issues_matched": 35
+  },
+  "garbage_rate_by_paper": {
+    "IMVO": 0.03774985401056083,
+    "ISIG": 0.014242151511354065
+  },
+  "noisier_paper": "IMVO",
+  "probe": {
+    "IMVO Nov 1884-88": {
+      "mean_p_imvo": 0.7775472570454399,
+      "ci": [
+        0.7463300903785502,
+        0.8063842604626318
+      ],
+      "frac_segments_imvo": 0.8772919605077574,
+      "n_issues": 31,
+      "mean_in_vocab_tokens": 50.905597602193026
+    },
+    "ISIG 1876-80 (pre-Jabavu)": {
+      "mean_p_imvo": 0.5533807697035822,
+      "ci": [
+        0.5407048419152253,
+        0.5664363264992138
+      ],
+      "frac_segments_imvo": 0.5824081981212639,
+      "n_issues": 51,
+      "mean_in_vocab_tokens": 60.676675423858654
+    },
+    "ISIG 1881-Oct 1884 (Jabavu)": {
+      "mean_p_imvo": 0.6048800893618945,
+      "ci": [
+        0.5913876830424379,
+        0.6185349540302784
+      ],
+      "frac_segments_imvo": 0.6626916524701874,
+      "n_issues": 56,
+      "mean_in_vocab_tokens": 56.27502866412822
+    },
+    "ISIG Nov 1884-88 (post-Jabavu)": {
+      "mean_p_imvo": 0.33828506126652286,
+      "ci": [
+        0.28433434097685406,
+        0.397852706487806
+      ],
+      "frac_segments_imvo": 0.26119402985074625,
+      "n_issues": 7,
+      "mean_in_vocab_tokens": 56.481275483662266
+    },
+    "diff_jabavu_minus_post": [
+      0.26659502809537167,
+      0.20791219668778071,
+      0.3224800924420931
+    ],
+    "diff_jabavu_minus_pre": [
+      0.05149931965831234,
+      0.03286107376787574,
+      0.07075087120122286
+    ]
+  },
+  "probe_by_year": {
+    "IMVO-1884": 0.8645,
+    "IMVO-1885": 0.7443,
+    "IMVO-1886": 0.8365,
+    "IMVO-1887": 0.7789,
+    "IMVO-1888": 0.7356,
+    "ISIG-1876": 0.547,
+    "ISIG-1877": 0.5704,
+    "ISIG-1878": 0.5546,
+    "ISIG-1879": 0.5318,
+    "ISIG-1880": 0.5587,
+    "ISIG-1881": 0.5688,
+    "ISIG-1882": 0.5697,
+    "ISIG-1883": 0.6182,
+    "ISIG-1884": 0.6222,
+    "ISIG-1885": 0.2715,
+    "ISIG-1887": 0.2946,
+    "ISIG-1888": 0.3839
+  },
+  "lexicon": {
+    "IMVO Nov 1884-88": {
+      "political_per1k": [
+        14.057002282793645,
+        13.319637993749398,
+        14.793967335542469
+      ],
+      "religious_per1k": [
+        3.232528767724694,
+        3.010536954579741,
+        3.468474678817441
+      ],
+      "pol_share": [
+        0.798013501262706,
+        0.783219848401164,
+        0.8127523447053085
+      ],
+      "n_issues": 211
+    },
+    "ISIG 1876-80 (pre-Jabavu)": {
+      "political_per1k": [
+        8.929988241756694,
+        8.12477940426457,
+        9.804422332731466
+      ],
+      "religious_per1k": [
+        8.226023432765162,
+        7.0823098211500115,
+        9.401979966561406
+      ],
+      "pol_share": [
+        0.536362951238468,
+        0.4924067509886293,
+        0.5805134153103596
+      ],
+      "n_issues": 51
+    },
+    "ISIG 1881-Oct 1884 (Jabavu)": {
+      "political_per1k": [
+        10.03973622268738,
+        8.996902802988382,
+        11.11600351877902
+      ],
+      "religious_per1k": [
+        4.762591801509287,
+        4.220291777289546,
+        5.342404538068698
+      ],
+      "pol_share": [
+        0.6660949351307057,
+        0.6313828503071366,
+        0.699806611931527
+      ],
+      "n_issues": 56
+    },
+    "ISIG Nov 1884-88 (post-Jabavu)": {
+      "political_per1k": [
+        7.377080754565909,
+        6.220992843337591,
+        8.732835107368036
+      ],
+      "religious_per1k": [
+        5.1392059434641215,
+        4.323284319362838,
+        5.980074607126707
+      ],
+      "pol_share": [
+        0.5858171408575906,
+        0.5389434802692263,
+        0.6339669696925766
+      ],
+      "n_issues": 38
+    }
+  },
+  "lexicon_by_year": {
+    "IMVO-1884": {
+      "political_per1k": 10.8489,
+      "religious_per1k": 1.8997,
+      "pol_share": 0.8349
+    },
+    "IMVO-1885": {
+      "political_per1k": 11.945,
+      "religious_per1k": 3.3183,
+      "pol_share": 0.7712
+    },
+    "IMVO-1886": {
+      "political_per1k": 14.942,
+      "religious_per1k": 2.846,
+      "pol_share": 0.8244
+    },
+    "IMVO-1887": {
+      "political_per1k": 15.9149,
+      "religious_per1k": 3.0171,
+      "pol_share": 0.833
+    },
+    "IMVO-1888": {
+      "political_per1k": 13.9667,
+      "religious_per1k": 3.972,
+      "pol_share": 0.7574
+    },
+    "ISIG-1876": {
+      "political_per1k": 7.7577,
+      "religious_per1k": 12.9519,
+      "pol_share": 0.3838
+    },
+    "ISIG-1877": {
+      "political_per1k": 9.4094,
+      "religious_per1k": 8.8269,
+      "pol_share": 0.5083
+    },
+    "ISIG-1878": {
+      "political_per1k": 8.6079,
+      "religious_per1k": 7.3395,
+      "pol_share": 0.5444
+    },
+    "ISIG-1879": {
+      "political_per1k": 10.93,
+      "religious_per1k": 6.2092,
+      "pol_share": 0.6516
+    },
+    "ISIG-1880": {
+      "political_per1k": 8.0814,
+      "religious_per1k": 4.6506,
+      "pol_share": 0.6362
+    },
+    "ISIG-1881": {
+      "political_per1k": 10.3863,
+      "religious_per1k": 6.0468,
+      "pol_share": 0.6124
+    },
+    "ISIG-1882": {
+      "political_per1k": 7.2517,
+      "religious_per1k": 3.2339,
+      "pol_share": 0.6809
+    },
+    "ISIG-1883": {
+      "political_per1k": 9.8248,
+      "religious_per1k": 4.9662,
+      "pol_share": 0.6415
+    },
+    "ISIG-1884": {
+      "political_per1k": 11.3422,
+      "religious_per1k": 5.0943,
+      "pol_share": 0.6844
+    },
+    "ISIG-1885": {
+      "political_per1k": 5.7417,
+      "religious_per1k": 5.5116,
+      "pol_share": 0.5072
+    },
+    "ISIG-1887": {
+      "political_per1k": 8.7483,
+      "religious_per1k": 3.5861,
+      "pol_share": 0.7058
+    },
+    "ISIG-1888": {
+      "political_per1k": 7.7797,
+      "religious_per1k": 6.1863,
+      "pol_share": 0.555
+    }
+  },
+  "lexicon_perm_p_political": 0.0,
+  "lexicon_obs_diff_political": 6.679921528227736
+}

@@ -1,0 +1,187 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{ccn}
+\usepackage{pslatex}
+\usepackage{apacite}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{natbib}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{tabularx}
+\usepackage[labelfont=bf, margin=0.8cm, font=sf]{caption}
+
+\newcommand{\grapheme}[1]{$\langle$#1$\rangle$}
+
+\title{Politics or Print? Separating Content from Shortcuts when Classifying\\
+Two Nineteenth-Century isiXhosa Newspapers}
+
+\author{{\large \bf Sibonelo Mlambo (536187)} \\ University of the Witwatersrand, 1 Jan Smuts Ave,\\ Braamfontein, Johannesburg, 2000, South Africa}
+
+\begin{document}
+
+\maketitle
+\phantom{.}
+\newpage
+\phantom{.}
+\newpage
+
+%=====================================================================
+\section{Abstract}
+{\bf \looseness=-1
+We ask whether a classifier that separates \emph{Imvo Zabantsundu}, founded by J.\,T.\ Jabavu in 1884, from the missionary \emph{Isigidimi sama-Xosa} reads politics or print. Using the isiXhosa Intellectual Traditions corpus (Nov 1884--1888), we train tuned classifiers along a ladder that removes English, self-references, names and spelling conventions, and add non-content baselines, matching and noise injection. Raw text is separated with balanced accuracy 0.93, but spelling and transcription features alone reach 0.85. A content-word model keeps 0.81 (0.78 on noise- and spelling-matched pairs), and its features and a lexicon show Imvo using political vocabulary at about twice Isigidimi's rate. Isigidimi's political share fell after Jabavu left, but on earlier years the classifier mainly tracks time drift.
+}
+\begin{quote}
+\small
+\textbf{Keywords:} historical isiXhosa; shortcut learning; responsible NLP
+\end{quote}
+
+%=====================================================================
+\section{Introduction} \label{Intro}
+\looseness=-1
+\emph{Isigidimi sama-Xosa} (Lovedale, 1870--1888) was published under missionary control. \emph{Imvo Zabantsundu} (King William's Town, from November 1884) was founded by John Tengo Jabavu, who had edited Isigidimi from 1881 \citep{sahojabavu} and left because the missionaries were reluctant to publish explicitly political material \citep{odendaal1984vukani}. The digitised archive of \citet{schoots2023isixhosa} makes the split testable: if the break was political, the papers should differ in \emph{what} they discuss. A source classifier looks like natural evidence, but classifiers exploit whatever separates the labels \citep{gururangan2018annotation,geirhos2020shortcut}, and historical text is full of such shortcuts: collection-specific transcription error \citep{hill2019quantifying,vanstrien2020assessing}, mastheads, adverts and house spelling.
+
+\textbf{Research question.} \emph{When a classifier separates the two papers over the years both appeared, how much of the separation is content, and how much is identity, transcription noise and orthography?} We test whether (H1) raw accuracy is inflated by shortcuts, (H2) a signal survives their removal, and (H3) that residual is political rather than religious. In a low-resource language \citep{joshi2020state}, mistaking print for politics would yield confident, false claims about historical Black writers.
+
+
+
+\setlength{\belowcaptionskip}{-8pt}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig1_ladder_col.pdf}
+  \vspace{-14pt}
+  \caption{\looseness=-1 Test balanced accuracy (chance $=0.5$) as shortcuts are removed; mean $\pm$ s.d.\ over three issue-grouped splits. The character model, which can read spelling, loses most when orthography is equalised (L3$\to$L4).}
+  \label{fig:ladder}
+\end{figure}
+\setlength{\belowcaptionskip}{0pt}
+
+%---------------------------------------------------------------------
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.9\textwidth]{fig2_eras.pdf}
+  \vspace{-4pt}
+  \caption{\looseness=-1 Isigidimi before, during (shaded) and after Jabavu's editorship, with Imvo for comparison; 1884 is split at Imvo's founding, and bars show $\pm1.96$ s.e.\ over issues. \textbf{(a)} Isigidimi's political share of thematic terms rises into the Jabavu years and falls after his departure. \textbf{(b)} Share of segments the L4 content model (trained on Nov 1884--88) labels ``Imvo''. Earlier years land on the Imvo side whoever the editor was, so this score tracks distance from late Isigidimi.}
+  \label{fig:eras}
+\end{figure*}
+
+
+%=====================================================================
+\section{Methods}\label{Methods}
+\looseness=-1
+\textbf{Data.} We use both papers from November 1884 (Imvo's first issue) to December 1888 (Isigidimi's last; its 1886 volume is lost). Pages are cut into 200-token windows (6{,}699 Imvo and 1{,}509 Isigidimi segments from 211 and 38 issues), and every cleaning level is applied to the same windows. Splits are 70/15/15 \emph{by issue}, stratified by paper and year, for three seeds. Evaluation segments sharing over 30\% of their word 6-grams with training text (reprinted adverts) are removed: 277 of 2{,}512.
+
+\textbf{Cleaning ladder.} L0 is the full page; L1 keeps only the dataset's isiXhosa paragraphs (Imvo is 27\% English, Isigidimi 1\%; \citealp{schoots2023isixhosa}). L2 also removes self-references (titles, place of printing, staff), digits and punctuation. L3 also masks capitalised non-sentence-initial tokens (names). L4 is lower-cased, equalises orthography (\grapheme{bh}$\to$\grapheme{b}, \grapheme{xh}$\to$\grapheme{x}, no elision apostrophes) and keeps the 3{,}485 words seen $\geq5$ times in \emph{both} papers' training data, so one-paper spellings and OCR errors are unusable.
+
+\textbf{Models.} Word and character (2--5-gram) TF-IDF with class-balanced logistic regression, Complement Naive Bayes, and fastText subword embeddings \citep{bojanowski2017enriching} trained on the training split and mean-pooled. Pretrained encoders \citep{alabi2022adapting} could not be downloaded here. Hyper-parameters are grid-searched on validation macro-F1 (scores plateau beyond the grid edge; Supp.\ Table~\ref{tab:s3}), and each test set is used once. Isigidimi is 18\% of segments, so we report macro-F1 and balanced accuracy (BA) with 95\% CIs from a bootstrap over issues.
+
+\textbf{Isolating the signal.} (i) \emph{Feature families} on L4: the 100 most frequent shared words (a function-word ``style'' set; \citealp{mosteller1964inference}) versus the remaining ``content'' words. On raw text: 15 transcription-quality features (e.g.\ vowel-less tokens, English function words) and 4 orthographic rates (\grapheme{bh}, \grapheme{xh}, elision, hyphens). (ii) \emph{Matching}: each Isigidimi test segment is paired 1:1 with its nearest Imvo segment on the 19 standardised non-content features, within a median-distance caliper \citep{stuart2010matching}. This gives 134 pairs and cuts the mean absolute standardised difference from 0.29 to 0.08. (iii) OCR-style \emph{noise injection} (\emph{u}/\emph{n}, \emph{rn}/\emph{m}, \dots) into Isigidimi test text; (iv) a \emph{temporal hold-out} (test on 1888). (v) \emph{Probe}: the content model scores unseen Isigidimi issues from 1876--80 (before Jabavu) and 1881--Oct 1884 (under Jabavu). (vi) \emph{Lexicon}: 12 political stems (e.g.\ \emph{palamente} parliament, \emph{rulumente} government) and 12 religious stems (e.g.\ \emph{Tixo} God), with false matches removed after checking concordances (Supp.\ S2).
+
+%---------------------------------------------------------------------
+\setlength{\belowcaptionskip}{-6pt}
+\begin{table}[t]
+\centering
+\captionsetup{font=sf, width=0.98\linewidth, skip=4pt}
+\caption{\looseness=-1 Test results: macro-F1 with issue-bootstrap 95\% CI (seed 13), its s.d.\ over 3 splits, BA, and BA$_m$ on the 134 matched pairs. Majority-class macro-F1 $\approx 0.45$.}
+\footnotesize
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Representation & Macro-F1 [CI] & s.d. & BA & BA$_m$ \\
+\midrule
+Full page text, char n-grams & 0.926 [0.90, 0.95] & 0.010 & 0.92 & -- \\
+isiXhosa only, char n-grams & 0.916 [0.88, 0.95] & 0.012 & 0.91 & 0.86 \\
+isiXhosa only, words & 0.883 [0.85, 0.92] & 0.009 & 0.88 & 0.85 \\
+Shared vocab., words (uni+bi) & 0.840 [0.79, 0.88] & 0.019 & 0.84 & 0.81 \\
+Shared vocab., fastText & 0.738 [0.70, 0.78] & 0.002 & 0.78 & -- \\
+Content words only & 0.802 [0.76, 0.84] & -- & 0.81 & 0.78 \\
+Top-100 (function) words only & 0.718 [0.68, 0.76] & -- & 0.75 & 0.71 \\
+Transcription features (GB) & 0.715 [0.66, 0.77] & -- & 0.74 & 0.62 \\
+Orthography features (GB) & 0.759 [0.69, 0.82] & -- & 0.83 & 0.73 \\
+All non-content features (GB) & 0.831 [0.78, 0.87] & -- & 0.85 & 0.75 \\
+\bottomrule
+\end{tabular}
+\label{tab:main}
+\end{table}
+\setlength{\belowcaptionskip}{0pt}
+
+%=====================================================================
+\section{Results}\label{Results}
+\looseness=-1
+\textbf{Shortcuts inflate accuracy (H1).} On full pages character $n$-grams reach BA $0.93\pm0.01$ (Fig.~\ref{fig:ladder}). The strongest L1 character features are house conventions: Imvo writes \grapheme{bh} (8.7 tokens per 1{,}000 vs.\ 0.01) and \grapheme{xh}, while Isigidimi uses elision apostrophes three times as often. Imvo also has 2.4$\times$ more vowel-less tokens, mostly residual transcription errors. Non-content features alone reach BA 0.85 (Table~\ref{tab:main}). Disabling the reprint filter changes scores by $<0.01$.
+
+\textbf{A content signal survives (H2).} Each control lowers accuracy, but the L4 word model keeps BA $0.83\pm0.03$ across splits, and content words alone reach 0.81. On matched pairs the content model loses only 0.03, while the non-content models lose 0.10--0.12 (Table~\ref{tab:main}, BA$_m$). Matching is imperfect, so this bounds the confound. Corrupting 5\% of Isigidimi tokens moves under 4\% of segments to ``Imvo''. Tested on unseen 1888, the L4 model keeps BA 0.80. Our own fastText embeddings (about 1M training tokens) trail sparse features throughout.
+
+\textbf{The residual is political (H3).} Top Imvo content features include \emph{abamnyama} and \emph{amawetu} (``black people'', ``our people''), \emph{imantyi} (magistrate), \emph{amatyala} (court cases), \emph{entolongweni} (in prison) and Gordon Sprigg, Cape premier from 1886. Isigidimi's include \emph{imbali} (history), \emph{inkosi} (chief), \emph{imfazwe} (war) and \emph{Ntsikana}, the early Xhosa Christian hymn-writer. Imvo uses 14.1 political terms per 1{,}000 tokens [13.3, 14.8] against Isigidimi's 7.4 [6.2, 8.7] (permutation $p<0.001$), and 3.2 vs.\ 5.1 religious terms. Within Isigidimi (Fig.~\ref{fig:eras}a), the political share rises from 0.54 [0.49, 0.58] in 1876--80 to 0.67 [0.63, 0.70] under Jabavu, then falls to 0.59 [0.54, 0.63] after he left.
+
+\textbf{The classifier is a poor clock.} On unseen Isigidimi years (Fig.~\ref{fig:eras}b) the content model calls 66\% of Jabavu-era segments ``Imvo'', but also 58\% of 1876--80 segments, against 26\% of held-out post-1884 ones. The Jabavu-era excess over 1876--80 is small (+0.05 mean probability, CI [0.03, 0.07]). It learned ``unlike late Isigidimi'', not ``like Imvo''.
+
+
+%=====================================================================
+\section{Discussion}\label{Discussion}
+\looseness=-1
+Print alone separates the papers (BA 0.85 without a topic word), so a 0.93 source classifier is no evidence of a political split (H1). Only after the controls does accuracy become interpretable, and it stays near 0.8 because the content differs (H2). Imvo's distinctive vocabulary is political, Isigidimi's historical and Christian (H3). This fits the account that Jabavu left to write politics freely \citep{odendaal1984vukani}: Isigidimi's political share peaked in his last years there and then fell. Its rise began in the late 1870s, however, suggesting a gradual politicisation that Isigidimi did not sustain rather than a single editor effect. We do not judge whether Jabavu was ``right'' to leave.
+
+\textbf{Responsible NLP.} \emph{Ablate before interpreting:} L1 feature weights would have presented \grapheme{bh} and apostrophes as Imvo's ``voice''. \emph{Noise is partly culture:} Imvo's spelling (e.g.\ \emph{Xhosa}, never printed in Isigidimi) is plausibly an editorial choice; removing it suits questions of topic, not identity, and must be documented \citep{bender2018data}. \emph{Forced-choice models misread time:} a binary classifier puts every unfamiliar text into one of its two classes, so Fig.~\ref{fig:eras}b does not show that 1876 Isigidimi ``sounded like'' Imvo. Such outputs must not become ideological labels for named authors \citep{blodgett2020language}.
+
+\textbf{Limitations.} Isigidimi supplies 38 issues (about 7 per test split), so CIs are wide. The lexicons, built by a non-first-language speaker, impose a modern politics/religion split on writers for whom the two were entwined. Publication frequency and genre are confounded with source, and word division survives L4 (Imvo's separated prefixes \emph{base}, \emph{ase} rank highly). 
+
+%=====================================================================
+\section{Contribution Statement}
+This was an individual project; the author list is unchanged from the preliminary statement. Sibonelo Mlambo is responsible for all components: reading the background literature, data exploration, experiment design (hypotheses, controls, splits and metrics), implementation of the pipeline and models, analysis, and writing of this abstract, the ethics checklist and the code documentation. Compared with the preliminary statement, (i) the pretrained multilingual model was replaced by fastText embeddings trained on the corpus, because pretrained weights could not be downloaded in the compute environment; (ii) topic modelling was replaced by feature-family ablations and a validated thematic lexicon, which answered the question more directly; and (iii) non-content matching, noise injection, a temporal hold-out and an out-of-sample probe of earlier Isigidimi years were added. AI assistance was used as declared below.
+
+\section{Faculty of Science AI Ethics Statement}
+I declare that generative AI was used in this project, as permitted by the course brief. Claude (Anthropic), used through an agentic coding environment, assisted with: designing the experimental controls, writing and debugging the Python code in the submission, running the experiments, producing the figures, and drafting the text of this extended abstract, the README and the NeurIPS checklist answers. Every claim and number in the abstract was checked against the experiment outputs (\texttt{outputs/results.csv}, \texttt{outputs/stats.json}), and historical facts were checked against the cited sources. The isiXhosa glosses are limited to words whose meaning I could verify, and the thematic lexicons were checked against corpus concordances. I have read and understood all code and text in this submission and take full responsibility for it, including any errors. No AI system was used to generate data or annotations for the experiments.
+
+\bibliographystyle{apacite}
+\setlength{\bibleftmargin}{.125in}
+\setlength{\bibindent}{-\bibleftmargin}
+\bibliography{refs}
+
+\clearpage
+\onecolumn
+\input{checklist}
+
+\clearpage
+\twocolumn
+\section*{Supplementary Material}
+\textbf{S1. Implementation details.} Segments are 200 whitespace tokens (windows with fewer than 60 raw or 30 L4 tokens are dropped). Grids: word LR $C\in\{0.3,1,3,10,30\}$, $n$-grams $\{(1,1),(1,2)\}$, min.\ df $\{2,5\}$; char LR $C\in\{1,3,10,30\}$, $n\in\{(2,4),(2,5)\}$; Complement NB $\alpha\in\{0.01,0.03,0.1,0.3,1\}$, min.\ df $\{2,5\}$; fastText (skip-gram, window 5, subwords 3--5, 10 epochs, 200k hash buckets) dim $\{50,100\}$ with LR $C\in\{0.01,0.1,1\}$; non-content LR $C\in\{10^{-3},\dots,10^{2}\}$; histogram gradient boosting learning rate $\{0.05,0.1\}$, depth $\{2,3,5\}$. All logistic regressions are class-balanced. Selected values for every run are in \texttt{outputs/results.csv}. Software: scikit-learn \citep{pedregosa2011scikit}, gensim \citep{rehurek2010software}. Compute: CPU only (2 cores, 8\,GB RAM); about 65 minutes wall-clock with the two README commands run in parallel.
+
+\textbf{S2. Lexicons} (stems matched inside lower-cased tokens; old orthography). \emph{Political:} palamente (parliament), voti/vota (vote), nyulo/nyulw/nyula (elect, election; excluding \emph{-qanyul-} ``cut''), rulumen (government), mteto/miteto (law), lungelo (right), rafu (tax), mantyi (magistrate), tyala (court case, charge), koloni (the Colony), bhunga (council). \emph{Religious:} tixo (God), yesu (whole word), kristu (Christ), tandaz (pray), zibalo (scripture), vangeli (gospel), ngcwele (holy), sono (sin, word-final), mfundisi/bafundisi (minister/s), cawa (church, Sunday), nkonzo (service). Rejected after concordance checks: \emph{kolwa} (matches \emph{kolwandle}), \emph{bunga} (many unrelated words), \emph{lawul} (mostly \emph{hlawula}, ``pay'').
+
+\textbf{S3. Synthetic noise.} The noisier paper was identified by its rate of vowel-less plus mixed letter--digit tokens (Imvo 3.8\% vs.\ Isigidimi 1.4\% of tokens; rare-token rate was not used because it is confounded with each paper's share of the training vocabulary). Confusions were injected into Isigidimi test segments at 0--40\% of tokens (Fig.~\ref{fig:s1}).
+
+\begin{figure*}[h]
+\centering
+\includegraphics[width=\textwidth]{fig1_ladder.pdf}
+\caption{Extended version of Fig.~\ref{fig:ladder}. \textbf{(b)} Single feature families (seed 13) on all test segments (blue) and on the 134 pairs matched for the 19 non-content features (orange): matching costs the content model 0.03 but the non-content models 0.10--0.12.}
+\label{fig:s0}
+\end{figure*}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{figS1_noise.pdf}
+\caption{Share of Isigidimi test segments classified as Imvo as synthetic OCR confusions are injected. Realistic rates (2--5\%) barely move predictions; only implausibly heavy corruption shifts the raw character model.}
+\label{fig:s1}
+\end{figure}
+
+\begin{figure*}[h]
+\centering
+\includegraphics[width=\textwidth]{figS2_surface.pdf}
+\caption{Selected non-content features per segment (training split; boxes: interquartile range, whiskers: 1.5 IQR). Imvo has more vowel-less and mixed letter--digit tokens, uppercase characters and English function words; the \grapheme{bh} digraph is almost exclusive to Imvo and apostrophe elision is more frequent in Isigidimi.}
+\label{fig:s2}
+\end{figure*}
+
+\input{supp_tables.tex}
+
+
+\end{document}

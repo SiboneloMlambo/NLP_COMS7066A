@@ -1,0 +1,85 @@
+% NeurIPS 2024 Paper Checklist (questions reproduced from the NeurIPS 2024 template).
+% If the course-provided .tex differs in wording, paste these answers into it.
+\newcommand{\answerYes}[1][]{\textcolor{blue}{[Yes] #1}}
+\newcommand{\answerNo}[1][]{\textcolor{orange}{[No] #1}}
+\newcommand{\answerNA}[1][]{\textcolor{gray}{[NA] #1}}
+
+\section*{NeurIPS Paper Checklist}
+\begin{enumerate}
+
+\item {\bf Claims}
+    \item[] Question: Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The abstract and introduction claim that (i) raw-text source classification is inflated by non-content shortcuts (spelling and transcription features alone reach balanced accuracy 0.85), (ii) a content signal survives all controls (about 0.8), and (iii) this residual is political rather than religious, with Isigidimi's political share falling after Jabavu left. Each claim is tied to Table 1 or a figure. The scope is two newspapers from November 1884 to December 1888, plus earlier Isigidimi issues used only as a probe.
+
+\item {\bf Limitations}
+    \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The Limitations paragraph and Methods note the small number of Isigidimi issues (38; wide confidence intervals), the missing 1886 Isigidimi volume, the hand-built lexicons (built by a non-first-language speaker and imposing a modern politics/religion split), the confounding of publication frequency and genre with source, word-division artefacts that survive the strictest cleaning level, imperfect matching, and the absence of pretrained encoders (which could not be downloaded in the compute environment). The Discussion also explains why the out-of-sample classifier probe cannot be read as an editor effect.
+
+\item {\bf Theory Assumptions and Proofs}
+    \item[] Question: For each theoretical result, does the paper provide the full set of assumptions and a complete (and correct) proof?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: The paper is empirical and contains no theoretical results.
+
+\item {\bf Experimental Result Reproducibility}
+    \item[] Question: Does the paper fully disclose all the information needed to reproduce the main experimental results of the paper to the extent that it affects the main claims and/or conclusions of the paper (regardless of whether the code and data are provided or not)?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The Methods section specifies the segmentation (200-token windows), the cleaning ladder L0--L4, the issue-grouped 70/15/15 split stratified by paper and year, the near-duplicate filter, the model families and hyper-parameter grids, the matching procedure and the noise-injection procedure. All random seeds are fixed in the code.
+
+\item {\bf Open access to data and code}
+    \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The full code, a \texttt{requirements.txt} and a \texttt{README.txt} with the exact commands are submitted. The data are the publicly released isiXhosa Intellectual Traditions text files \citep{schoots2023isixhosa}, which were distributed for the course; the README explains where to place them.
+
+\item {\bf Experimental Setting/Details}
+    \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer, etc.) necessary to understand the results?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The splits, grids and selection criterion (validation macro-F1, test set used once) are described in Methods; the selected hyper-parameters for every run are written to \texttt{outputs/results.csv}.
+
+\item {\bf Experiment Statistical Significance}
+    \item[] Question: Does the paper report error bars suitably and correctly defined or other appropriate information about the statistical significance of the experiments?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: All test scores carry 95\% confidence intervals from a cluster bootstrap that resamples whole issues (1{,}000 resamples), plus the standard deviation over three independent issue splits. Lexicon differences use issue-level bootstrap intervals and a permutation test.
+
+\item {\bf Experiments Compute Resources}
+    \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: All experiments run on CPU only (2 virtual cores, 8\,GB RAM, no GPU). The full pipeline (three seeds, all models including fastText) takes about 65 minutes of wall-clock time when the two commands in the README run in parallel, plus about 10 minutes for the grid-edge check; the README gives a \texttt{--fast} option that skips fastText.
+
+\item {\bf Code Of Ethics}
+    \item[] Question: Does the research conducted in the paper conform, in every respect, with the NeurIPS Code of Ethics \url{https://neurips.cc/public/EthicsGuidelines}?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The work uses publicly archived historical newspapers (1884--1888), involves no living human subjects, releases no generative model, and discusses the risks of attributing ideology to historical African authors from noisy text.
+
+\item {\bf Broader Impacts}
+    \item[] Question: Does the paper discuss both potential positive societal impacts and negative societal impacts of the work performed?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: Positive: the work gives digital humanities researchers a concrete control protocol before drawing cultural conclusions from OCR-derived isiXhosa archives. Negative: source and stance classifiers trained on such data can turn digitisation artefacts and modern categories into confident but wrong claims about historical Black South African writers and their politics, and can misattribute anonymous or pseudonymous writing; the Discussion addresses this.
+
+\item {\bf Safeguards}
+    \item[] Question: Does the paper describe safeguards that have been put in place for responsible release of data or models that have a high risk for misuse (e.g., pretrained language models, image generators, or scraped datasets)?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: No new dataset or high-risk model is released; the classifiers are small linear models trained for analysis only.
+
+\item {\bf Licenses for existing assets}
+    \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The dataset is credited to the isiXhosa Intellectual Traditions project at the University of Cape Town \citep{schoots2023isixhosa} and was used as provided for coursework under the archive's terms; the original scans belong to the National Library of South Africa and were not used. Software (scikit-learn, gensim, NumPy, pandas, Matplotlib) is open source and cited or listed in \texttt{requirements.txt}.
+
+\item {\bf New Assets}
+    \item[] Question: Are new assets introduced in the paper well documented and is the documentation provided alongside the assets?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The only new assets are the analysis code and two small thematic lexicons (in \texttt{src/features.py}), documented in the README and in code comments with the gloss of every stem.
+
+\item {\bf Crowdsourcing and Research with Human Subjects}
+    \item[] Question: For crowdsourcing experiments and research with human subjects, does the paper include the full text of instructions given to participants and screenshots, if applicable, as well as details about compensation (if any)?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: No crowdsourcing or human-subject research was performed.
+
+\item {\bf Institutional Review Board (IRB) Approvals or Equivalent for Research with Human Subjects}
+    \item[] Question: Does the paper describe potential risks incurred by study participants, whether such risks were disclosed to the subjects, and whether Institutional Review Board (IRB) approvals (or an equivalent approval/review based on the requirements of your country or institution) were obtained?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: No human participants were involved.
+
+\end{enumerate}

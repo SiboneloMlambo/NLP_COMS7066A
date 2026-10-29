@@ -1,0 +1,7 @@
+data/
+outputs_smoke/
+__pycache__/
+report/*.aux
+report/*.log
+report/*.out
+report/*.blg

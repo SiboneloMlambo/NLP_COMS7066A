@@ -1,0 +1,16 @@
+{'level': 'L1', 'model': 'char', 'C': 10, 'val_macro_f1': 0.9439}
+{'level': 'L1', 'model': 'char', 'C': 30, 'val_macro_f1': 0.9484}
+{'level': 'L1', 'model': 'char', 'C': 100, 'val_macro_f1': 0.9457}
+{'level': 'L1', 'model': 'char', 'C': 300, 'val_macro_f1': 0.9464}
+{'level': 'L1', 'model': 'word', 'C': 10, 'val_macro_f1': 0.8855}
+{'level': 'L1', 'model': 'word', 'C': 30, 'val_macro_f1': 0.8881}
+{'level': 'L1', 'model': 'word', 'C': 100, 'val_macro_f1': 0.8897}
+{'level': 'L1', 'model': 'word', 'C': 300, 'val_macro_f1': 0.8865}
+{'level': 'L4', 'model': 'char', 'C': 10, 'val_macro_f1': 0.8237}
+{'level': 'L4', 'model': 'char', 'C': 30, 'val_macro_f1': 0.813}
+{'level': 'L4', 'model': 'char', 'C': 100, 'val_macro_f1': 0.7983}
+{'level': 'L4', 'model': 'char', 'C': 300, 'val_macro_f1': 0.7952}
+{'level': 'L4', 'model': 'word', 'C': 10, 'val_macro_f1': 0.8355}
+{'level': 'L4', 'model': 'word', 'C': 30, 'val_macro_f1': 0.8237}
+{'level': 'L4', 'model': 'word', 'C': 100, 'val_macro_f1': 0.817}
+{'level': 'L4', 'model': 'word', 'C': 300, 'val_macro_f1': 0.815}

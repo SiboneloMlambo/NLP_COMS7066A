@@ -1,0 +1,52 @@
+\begin{table}[h]\centering\small\caption{Cleaning ladder, test macro-F1 / balanced accuracy, mean $\pm$ s.d.\ over three issue-grouped splits (seeds 13, 21, 42).}
+\begin{tabular}{@{}llcc@{}}\toprule Level & Model & Macro-F1 & Bal.\ acc. \\ \midrule
+L0 & char & 0.937 $\pm$ 0.010 & 0.929 $\pm$ 0.007 \\
+L0 & fastText & 0.824 $\pm$ 0.030 & 0.866 $\pm$ 0.014 \\
+L0 & CNB & 0.812 $\pm$ 0.029 & 0.875 $\pm$ 0.020 \\
+L0 & word & 0.902 $\pm$ 0.008 & 0.887 $\pm$ 0.006 \\
+L1 & char & 0.927 $\pm$ 0.012 & 0.917 $\pm$ 0.017 \\
+L1 & fastText & 0.822 $\pm$ 0.005 & 0.841 $\pm$ 0.007 \\
+L1 & CNB & 0.857 $\pm$ 0.021 & 0.861 $\pm$ 0.010 \\
+L1 & word & 0.891 $\pm$ 0.009 & 0.884 $\pm$ 0.011 \\
+L2 & char & 0.916 $\pm$ 0.017 & 0.905 $\pm$ 0.020 \\
+L2 & fastText & 0.796 $\pm$ 0.009 & 0.817 $\pm$ 0.011 \\
+L2 & CNB & 0.852 $\pm$ 0.016 & 0.854 $\pm$ 0.005 \\
+L2 & word & 0.886 $\pm$ 0.013 & 0.872 $\pm$ 0.020 \\
+L3 & char & 0.906 $\pm$ 0.025 & 0.896 $\pm$ 0.029 \\
+L3 & fastText & 0.764 $\pm$ 0.013 & 0.786 $\pm$ 0.009 \\
+L3 & CNB & 0.819 $\pm$ 0.013 & 0.822 $\pm$ 0.010 \\
+L3 & word & 0.859 $\pm$ 0.016 & 0.846 $\pm$ 0.020 \\
+L4 & char & 0.816 $\pm$ 0.007 & 0.818 $\pm$ 0.015 \\
+L4 & fastText & 0.740 $\pm$ 0.002 & 0.769 $\pm$ 0.009 \\
+L4 & CNB & 0.767 $\pm$ 0.009 & 0.801 $\pm$ 0.017 \\
+L4 & word & 0.839 $\pm$ 0.019 & 0.829 $\pm$ 0.026 \\
+\bottomrule\end{tabular}\label{tab:s1}\end{table}
+\begin{table}[h]\centering\small\caption{Robustness (seed 13). \emph{No dedup}: near-duplicate filter switched off. \emph{Temporal}: train/validate on Nov 1884--1887, test on 1888. Reference: the main random split.}
+\begin{tabular}{@{}lllcc@{}}\toprule Run & Level & Model & Macro-F1 & Ref.\ macro-F1 \\ \midrule
+No dedup & L0 & word & 0.902 & 0.899 \\
+No dedup & L0 & char & 0.928 & 0.926 \\
+No dedup & L1 & word & 0.890 & 0.883 \\
+No dedup & L1 & char & 0.920 & 0.916 \\
+Temporal & L1 & word & 0.864 & 0.883 \\
+Temporal & L1 & char & 0.896 & 0.916 \\
+Temporal & L4 & word & 0.787 & 0.840 \\
+Temporal & L4 & char & 0.745 & 0.811 \\
+\bottomrule\end{tabular}\label{tab:s2}\end{table}
+\begin{table}[h]\centering\small\caption{Grid-edge check (validation macro-F1, seed 13). Several selected $C$ values sat at the top of the grid; larger values do not improve validation scores.}
+\begin{tabular}{@{}llcccc@{}}\toprule Level & Model & $C$=10 & 30 & 100 & 300 \\ \midrule
+L1 & char & 0.944 & 0.948 & 0.946 & 0.946 \\
+L1 & word & 0.885 & 0.888 & 0.890 & 0.886 \\
+L4 & char & 0.824 & 0.813 & 0.798 & 0.795 \\
+L4 & word & 0.836 & 0.824 & 0.817 & 0.815 \\
+\bottomrule\end{tabular}\label{tab:s3}\end{table}
+\begin{table*}[h]\centering\small\caption{Editorial eras. Lexicon rates per 1{,}000 tokens (issue-level means, bootstrap 95\% CI over issues; all issues). Probe: mean P(Imvo) from the L4 content model and share of segments classified Imvo (post-1884 rows: held-out test issues only).}
+\begin{tabular}{@{}lcccccc@{}}\toprule Group & Issues (lex.) & Political/1k & Religious/1k & Political share & Mean P(Imvo) & \% segs.\ Imvo \\ \midrule
+Isigidimi 1876-80 (pre-Jabavu) & 51 & 8.93 [8.12, 9.80] & 8.23 [7.08, 9.40] & 0.54 [0.49, 0.58] & 0.55 & 58 \\
+Isigidimi 1881-Oct 1884 (Jabavu) & 56 & 10.04 [9.00, 11.12] & 4.76 [4.22, 5.34] & 0.67 [0.63, 0.70] & 0.60 & 66 \\
+Isigidimi Nov 1884-88 (post-Jabavu) & 38 & 7.38 [6.22, 8.73] & 5.14 [4.32, 5.98] & 0.59 [0.54, 0.63] & 0.34 & 26 \\
+Imvo Nov 1884-88 & 211 & 14.06 [13.32, 14.79] & 3.23 [3.01, 3.47] & 0.80 [0.78, 0.81] & 0.78 & 88 \\
+\bottomrule\end{tabular}\label{tab:s4}\end{table*}
+\begin{table}[h]\centering\small\caption{Twenty largest-weight features of the L4 content model, in order (seed 13). Glosses for selected items are given in the Results.}
+\begin{tabular}{@{}p{0.45\linewidth}p{0.45\linewidth}@{}}\toprule Favour Imvo & Favour Isigidimi \\ \midrule
+\emph{njengokuba, abamnyama, mayelana, base, ase, uku, sprigg, egqitileyo, kukuba, ba, zetu, epepeni, suka, omnyama, ixabiso, oka, okokuba, lokuba, amawetu, kwelilizwe} & \emph{imbali, ed, ngoko, ngosuku, malunga, uzele, suke, ezinje, londawo, inani, um, kanjalo, mbali, evekini, umlambo, ngolwe, ingu, ngxoxo, kwase, ndawo} \\
+\bottomrule\end{tabular}\label{tab:s5}\end{table}
