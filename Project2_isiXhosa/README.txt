@@ -72,8 +72,9 @@ missing, runs everything, builds figures):
 
 Put the two course zips next to the project folder, or pass --zips DIR.
 
-Google Colab: open reproduce_colab.ipynb, upload the project zip and
-the two course zips, and run the cells; the notebook calls reproduction.sh.
+Google Colab: open reproduce_colab.ipynb, upload the two course zips to
+/content, and run the cells in order. The notebook clones this repository,
+moves into Project2_isiXhosa/ and calls reproduction.sh.
 
 The individual steps the script runs are:
 
