@@ -1,0 +1,41 @@
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Representation & Macro-F1 [CI] & s.d. & BA & BA$_m$ \\
+\midrule
+Full page text, char & 0.926 [0.90, 0.95] & 0.010 & 0.92 & -- \\
+isiXhosa only, char & 0.916 [0.88, 0.95] & 0.012 & 0.91 & 0.86 \\
+isiXhosa only, words & 0.883 [0.85, 0.92] & 0.009 & 0.88 & 0.85 \\
+L4 shared vocab., words & 0.840 [0.79, 0.88] & 0.019 & 0.84 & 0.81 \\
+L4 shared vocab., fastText & 0.717 [0.68, 0.76] & 0.018 & 0.76 & -- \\
+L4 top-100 frequent words & 0.718 [0.68, 0.76] & -- & 0.75 & 0.71 \\
+L4 remaining vocabulary & 0.802 [0.76, 0.84] & -- & 0.81 & 0.78 \\
+\quad minus fragments, names & 0.750 [0.70, 0.80] & -- & 0.78 & 0.75 \\
+Transcription features & 0.715 [0.66, 0.77] & -- & 0.74 & 0.62 \\
+Orthography features & 0.759 [0.69, 0.82] & -- & 0.83 & 0.73 \\
+All non-content features & 0.831 [0.78, 0.87] & -- & 0.85 & 0.75 \\
+\bottomrule
+\end{tabular}
+               macro_f1               bal_acc              
+                   mean     std count    mean     std count
+level model                                                
+L0    char       0.9373  0.0102     3  0.9290  0.0067     3
+      fasttext   0.8285  0.0281     3  0.8661  0.0138     3
+      nb         0.8117  0.0285     3  0.8753  0.0202     3
+      word       0.9018  0.0084     3  0.8873  0.0060     3
+L1    char       0.9268  0.0120     3  0.9173  0.0166     3
+      fasttext   0.8071  0.0154     3  0.8296  0.0068     3
+      nb         0.8574  0.0214     3  0.8610  0.0097     3
+      word       0.8908  0.0090     3  0.8836  0.0105     3
+L2    char       0.9160  0.0174     3  0.9050  0.0199     3
+      fasttext   0.7983  0.0141     3  0.8168  0.0169     3
+      nb         0.8524  0.0158     3  0.8536  0.0047     3
+      word       0.8857  0.0132     3  0.8716  0.0199     3
+L3    char       0.9062  0.0251     3  0.8960  0.0290     3
+      fasttext   0.7582  0.0249     3  0.7825  0.0218     3
+      nb         0.8192  0.0128     3  0.8220  0.0099     3
+      word       0.8593  0.0159     3  0.8463  0.0204     3
+L4    char       0.8165  0.0072     3  0.8180  0.0146     3
+      fasttext   0.7365  0.0175     3  0.7681  0.0053     3
+      nb         0.7667  0.0091     3  0.8014  0.0171     3
+      word       0.8386  0.0188     3  0.8293  0.0259     3
+copied figures and tables into report/

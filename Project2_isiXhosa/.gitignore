@@ -1,4 +1,5 @@
 data/
+data
 outputs_smoke/
 __pycache__/
 report/*.aux

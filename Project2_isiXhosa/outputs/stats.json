@@ -42,11 +42,23 @@
     }
   },
   "shared_vocab_size": 3485,
+  "vocab_groups": {
+    "top100": 100,
+    "remaining": 3385,
+    "remaining_clean": 3026,
+    "excluded": {
+      "short": 222,
+      "prefix-before-name": 129,
+      "capitalised": 45
+    }
+  },
   "matching": {
     "n_pairs": 134,
     "caliper": 1.8290358499840673,
     "mean_abs_smd_before": 0.28827477853894895,
     "mean_abs_smd_after": 0.08250088089645137,
+    "max_abs_smd_after": 0.2923574275101029,
+    "n_features_abs_smd_after_gt_0_25": 1,
     "n_issues_matched": 35
   },
   "garbage_rate_by_paper": {
@@ -128,9 +140,9 @@
   "lexicon": {
     "IMVO Nov 1884-88": {
       "political_per1k": [
-        14.057002282793645,
-        13.319637993749398,
-        14.793967335542469
+        13.969374861738487,
+        13.237542415591006,
+        14.698509259509288
       ],
       "religious_per1k": [
         3.232528767724694,
@@ -138,9 +150,9 @@
         3.468474678817441
       ],
       "pol_share": [
-        0.798013501262706,
-        0.783219848401164,
-        0.8127523447053085
+        0.796949538674284,
+        0.7821023764899395,
+        0.8117070520749219
       ],
       "n_issues": 211
     },
@@ -206,24 +218,24 @@
       "pol_share": 0.8349
     },
     "IMVO-1885": {
-      "political_per1k": 11.945,
+      "political_per1k": 11.8849,
       "religious_per1k": 3.3183,
-      "pol_share": 0.7712
+      "pol_share": 0.7707
     },
     "IMVO-1886": {
-      "political_per1k": 14.942,
+      "political_per1k": 14.7986,
       "religious_per1k": 2.846,
-      "pol_share": 0.8244
+      "pol_share": 0.8226
     },
     "IMVO-1887": {
-      "political_per1k": 15.9149,
+      "political_per1k": 15.8436,
       "religious_per1k": 3.0171,
-      "pol_share": 0.833
+      "pol_share": 0.8325
     },
     "IMVO-1888": {
-      "political_per1k": 13.9667,
+      "political_per1k": 13.8784,
       "religious_per1k": 3.972,
-      "pol_share": 0.7574
+      "pol_share": 0.756
     },
     "ISIG-1876": {
       "political_per1k": 7.7577,
@@ -287,5 +299,40 @@
     }
   },
   "lexicon_perm_p_political": 0.0,
-  "lexicon_obs_diff_political": 6.679921528227736
+  "lexicon_obs_diff_political": 6.592294107172578,
+  "lexicon_year_controlled": {
+    "political_per1k": {
+      "years": [
+        1884,
+        1885,
+        1887,
+        1888
+      ],
+      "mean_within_year_diff": 5.909833596944898,
+      "perm_p_within_year": 0.0002,
+      "n_years_imvo_higher": 4
+    },
+    "religious_per1k": {
+      "years": [
+        1884,
+        1885,
+        1887,
+        1888
+      ],
+      "mean_within_year_diff": -2.2543951809078844,
+      "perm_p_within_year": 0.0002,
+      "n_years_imvo_higher": 0
+    },
+    "pol_share": {
+      "years": [
+        1884,
+        1885,
+        1887,
+        1888
+      ],
+      "mean_within_year_diff": 0.22584466308399184,
+      "perm_p_within_year": 0.0002,
+      "n_years_imvo_higher": 4
+    }
+  }
 }

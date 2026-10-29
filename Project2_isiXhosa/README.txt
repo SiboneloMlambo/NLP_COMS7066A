@@ -34,14 +34,17 @@ Experiments
           papers' training data
      + the same split WITHOUT the near-duplicate filter (leakage check)
  E2  temporal hold-out: train/validate on Nov 1884-1887, test on 1888
- E3  feature families: top-100 frequent words ("style"), remaining shared
-     words ("content"), transcription-noise features, orthography features
+ E3  feature families: top-100 frequent shared words, remaining shared
+     vocabulary (and a sensitivity version without grammatical fragments and
+     residual names), transcription-noise features, orthography features.
+     Frequency only loosely separates style from topic.
  E4  evaluation on test pairs matched on all non-content features
  E5  synthetic OCR-noise injection into the cleaner paper's test segments
  E6  most influential features (CSV files)
  E7  out-of-sample probe: Isigidimi 1876-Oct 1884 (pre-Jabavu and Jabavu
      editorial eras) scored by the content classifier
- E8  political / religious lexicon rates per issue and per era
+ E8  political / religious lexicon rates per issue and per era, a
+     year-controlled comparison (common years only) and a concordance audit
 
 Hyper-parameters are chosen on the validation split by macro-F1; the test
 split is used once. Test CIs: cluster bootstrap over issues (1000 resamples).
@@ -49,7 +52,11 @@ split is used once. Test CIs: cluster bootstrap over issues (1000 resamples).
 ------------------------------------------------------------------------
 2. Setup
 ------------------------------------------------------------------------
-Python 3.10+ (tested with 3.13).   CPU only; no GPU or internet needed.
+Python 3.10+ (results produced with 3.13 and the exact versions pinned in
+requirements.txt).  CPU only; no GPU or internet needed.
+Determinism: all splits/models are seeded; fastText is trained single-threaded
+and run_experiments.py fixes PYTHONHASHSEED=0 (it re-launches itself if
+needed), so reruns with the pinned versions reproduce the reported numbers.
 
     pip install -r requirements.txt
 
@@ -59,6 +66,12 @@ Data: unzip the two course archives so that the page files sit in
     data/XhTxt/IMVO_1884-11-03_p001.txt ...      (XhTxt folder of TxtLangFiles1870-1894_TB.zip)
 
 (The EnTxt folder is not needed.)
+
+Licence: the texts come from the isiXhosa Intellectual Traditions Digital
+Archive (Dept of Sociology, UCT). Its item pages say the Word documents are
+"downloadable and reusable"; UCT's eMandulo / Five Hundred Year Archive mirror
+of the converted text files marks them CC BY-NC-ND 4.0. The text is therefore
+NOT included in this repository; obtain it from the course page or archive.
 
 ------------------------------------------------------------------------
 3. Running
@@ -108,4 +121,10 @@ surface_features.csv               non-content features per segment
 stats.json                         corpus counts, duplicate counts, matching
                                    balance, probe and lexicon summaries
 figures/                           figures used in the report
+matched_pairs.csv, matching_balance.csv  E4 pairs and per-feature balance
+lexicon_by_year_controlled.csv     E8 comparison restricted to common years
+lexicon_audit.csv, lexicon_rejected.csv  lexicon concordance audit
+excluded_fragments_names.csv       tokens removed in the sensitivity model
 log_*.txt                          run logs
+(make_figures.py also copies the figures and tables used by the LaTeX
+report into report/.)

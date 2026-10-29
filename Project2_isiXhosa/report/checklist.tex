@@ -10,12 +10,12 @@
 \item {\bf Claims}
     \item[] Question: Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The abstract and introduction claim that (i) raw-text source classification is inflated by non-content shortcuts (spelling and transcription features alone reach balanced accuracy 0.85), (ii) a content signal survives all controls (about 0.8), and (iii) this residual is political rather than religious, with Isigidimi's political share falling after Jabavu left. Each claim is tied to Table 1 or a figure. The scope is two newspapers from November 1884 to December 1888, plus earlier Isigidimi issues used only as a probe.
+    \item[] Justification: The abstract and introduction claim that (i) raw-text source classification is inflated by non-content shortcuts (spelling and transcription proxies alone reach balanced accuracy 0.85), (ii) a source signal survives all controls (about 0.8), which the paper explicitly does not attribute exclusively to politics, and (iii) a separate lexicon analysis shows more political vocabulary in Imvo, including within every common year. Each claim is tied to Table 1, a figure or a supplementary table. The scope is two newspapers from November 1884 to December 1888, plus earlier Isigidimi issues used only as a probe.
 
 \item {\bf Limitations}
     \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The Limitations paragraph and Methods note the small number of Isigidimi issues (38; wide confidence intervals), the missing 1886 Isigidimi volume, the hand-built lexicons (built by a non-first-language speaker and imposing a modern politics/religion split), the confounding of publication frequency and genre with source, word-division artefacts that survive the strictest cleaning level, imperfect matching, and the absence of pretrained encoders (which could not be downloaded in the compute environment). The Discussion also explains why the out-of-sample classifier probe cannot be read as an editor effect.
+    \item[] Justification: The Limitations paragraph, Methods and Supplement note the small number of Isigidimi issues (38; wide confidence intervals), the missing 1886 Isigidimi volume, the hand-built lexicons (drafted by a non-first-language speaker, not reviewed by a first-language speaker, and imposing a modern politics/religion split), the confounding of publication frequency and genre with source, the loose separation of style and topic by word frequency, matching that reduces only measured imbalance, transcription features that are proxies rather than measured OCR error rates, and the absence of pretrained encoders. The Discussion explains why the out-of-sample classifier probe cannot be read as an editor effect.
 
 \item {\bf Theory Assumptions and Proofs}
     \item[] Question: For each theoretical result, does the paper provide the full set of assumptions and a complete (and correct) proof?
@@ -25,12 +25,12 @@
 \item {\bf Experimental Result Reproducibility}
     \item[] Question: Does the paper fully disclose all the information needed to reproduce the main experimental results of the paper to the extent that it affects the main claims and/or conclusions of the paper (regardless of whether the code and data are provided or not)?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The Methods section specifies the segmentation (200-token windows), the cleaning ladder L0--L4, the issue-grouped 70/15/15 split stratified by paper and year, the near-duplicate filter, the model families and hyper-parameter grids, the matching procedure and the noise-injection procedure. All random seeds are fixed in the code.
+    \item[] Justification: The Methods section and Supplement specify the segmentation (200-token windows), the cleaning ladder L0--L4, the issue-grouped 70/15/15 split stratified by paper and year, the near-duplicate filter, the model families and hyper-parameter grids (Supplement S1), the matching procedure and the noise-injection procedure. Random seeds are fixed in the code; fastText is trained single-threaded with a fixed \texttt{PYTHONHASHSEED}, so reruns with the pinned package versions are deterministic.
 
 \item {\bf Open access to data and code}
     \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The full code, a \texttt{requirements.txt} and a \texttt{README.txt} with the exact commands are submitted. The data are the publicly released isiXhosa Intellectual Traditions text files \citep{schoots2023isixhosa}, which were distributed for the course; the README explains where to place them.
+    \item[] Justification: The code, a \texttt{requirements.txt} with pinned versions, a \texttt{README.txt}, a one-command script (\texttt{reproduction.sh}) and a Colab notebook are publicly available at \url{https://github.com/SiboneloMlambo/NLP_COMS7066A} (folder \texttt{Project2\_isiXhosa}). The newspaper text itself is not redistributed there (see the licence answer below); the README explains how to obtain and place it.
 
 \item {\bf Experimental Setting/Details}
     \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer, etc.) necessary to understand the results?
@@ -45,7 +45,7 @@
 \item {\bf Experiments Compute Resources}
     \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
     \item[] Answer: \answerYes{}
-    \item[] Justification: All experiments run on CPU only (2 virtual cores, 8\,GB RAM, no GPU). The full pipeline (three seeds, all models including fastText) takes about 65 minutes of wall-clock time when the two commands in the README run in parallel, plus about 10 minutes for the grid-edge check; the README gives a \texttt{--fast} option that skips fastText.
+    \item[] Justification: All experiments run on CPU only (2 virtual cores, 8\,GB RAM, no GPU). The full pipeline (three seeds, all models including single-threaded fastText, plus the grid-edge check) takes about 75 minutes of wall-clock time with \texttt{reproduction.sh}, which runs the seeds in two parallel processes; \texttt{--fast} skips fastText.
 
 \item {\bf Code Of Ethics}
     \item[] Question: Does the research conducted in the paper conform, in every respect, with the NeurIPS Code of Ethics \url{https://neurips.cc/public/EthicsGuidelines}?
@@ -65,7 +65,7 @@
 \item {\bf Licenses for existing assets}
     \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The dataset is credited to the isiXhosa Intellectual Traditions project at the University of Cape Town \citep{schoots2023isixhosa} and was used as provided for coursework under the archive's terms; the original scans belong to the National Library of South Africa and were not used. Software (scikit-learn, gensim, NumPy, pandas, Matplotlib) is open source and cited or listed in \texttt{requirements.txt}.
+    \item[] Justification: The texts come from the isiXhosa Intellectual Traditions Digital Archive (Department of Sociology, University of Cape Town; \citealp{schoots2023isixhosa}). The archive's item pages state that the Word documents are ``downloadable and reusable'' without naming a licence, while UCT's eMandulo/Five Hundred Year Archive mirror of the converted text files marks them CC BY-NC-ND 4.0. We therefore use them only for non-commercial coursework, credit the source, and do not redistribute the text or derived corpora in our public repository. High-resolution scans belong to the National Library of South Africa and were not used. Software (scikit-learn, gensim, NumPy, pandas, SciPy, Matplotlib) is open source and listed with versions in \texttt{requirements.txt}.
 
 \item {\bf New Assets}
     \item[] Question: Are new assets introduced in the paper well documented and is the documentation provided alongside the assets?

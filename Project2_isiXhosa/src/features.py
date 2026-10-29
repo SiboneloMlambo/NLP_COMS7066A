@@ -87,7 +87,8 @@ LEXICON = {
         r"mantyi",           # magistrate (imantyi)
         r"tyala",            # court case, charge (ityala)
         r"koloni",           # the Colony
-        r"bhunga",           # council
+        # 'bhunga' (council) was dropped: Isigidimi never writes <bh>, so the
+        # pattern could only match Imvo's spelling (an orthographic bias).
     ],
     "religious": [
         r"tixo",             # God (uTixo, old orth. of uThixo)
@@ -104,6 +105,32 @@ LEXICON = {
 }
 EXCLUDE = re.compile(r"q[au]nyul|kolwandle")   # 'nqanyulwa' = be cut off
 LEX_RE = {k: [re.compile(p) for p in v] for k, v in LEXICON.items()}
+
+
+# Concepts (several patterns can express one concept, e.g. voti/vota = vote)
+N_CONCEPTS = {"political": 10, "religious": 11}
+
+# Candidate stems rejected after concordance checks, with the reason.
+REJECTED = {
+    "kolwa": "mostly 'kolwandle' (sea); 'kolwa' (believe) is not specifically religious",
+    "bunga": "mostly unrelated words ('bungane', '-bungatengiswa')",
+    "lawul": "mostly 'hlawula' (pay, fine)",
+    "yesu": "unanchored form matches 'yesuka' (start); kept only as a whole word",
+    "nyulwa (religious list)": "means 'be elected'; belongs to the political list",
+    "bhunga": "orthography-specific: only Imvo writes <bh>",
+}
+
+
+def lexicon_hits(tokens: list[str]):
+    """Yield (category, pattern, token) for every lexicon match (audit)."""
+    for w in tokens:
+        if EXCLUDE.search(w):
+            continue
+        for k, pats in LEX_RE.items():
+            for p in pats:
+                if p.search(w):
+                    yield k, p.pattern, w
+                    break
 
 
 def lexicon_counts(tokens: list[str]) -> dict[str, int]:

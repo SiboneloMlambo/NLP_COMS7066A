@@ -73,7 +73,7 @@ class FastTextLR:
             FastTextLR._cache.clear()   # keep memory bounded
             FastTextLR._cache[key] = FastText(
                 sentences=toks, vector_size=self.dim, window=5, min_count=3,
-                min_n=3, max_n=5, epochs=self.epochs, workers=2, bucket=200_000,
+                min_n=3, max_n=5, epochs=self.epochs, workers=1, bucket=200_000,
                 seed=self.seed, sg=1)
         self.ft = FastTextLR._cache[key]
         self.clf = make_pipeline(StandardScaler(),

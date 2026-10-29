@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import re
 import os
 import sys
 import time
@@ -23,7 +24,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from data import (build_corpus, issue_split, temporal_split, duplicate_mask,  # noqa: E402
                   level2, level4_tokens)
 from features import (surface_features, SURFACE_NAMES, lexicon_counts,  # noqa: E402
-                      inject_noise, ortho_features, ORTHO_NAMES)
+                      inject_noise, ortho_features, ORTHO_NAMES, lexicon_hits,
+                      REJECTED)
 from models import tune, metrics, cluster_bootstrap, word_lr  # noqa: E402
 from sklearn.metrics import f1_score  # noqa: E402
 
@@ -56,6 +58,50 @@ def shared_vocab(tokens_by_doc, y, min_count=5):
 def filt(texts, vocab):
     v = set(vocab)
     return [" ".join(w for w in t.split() if w in v) for t in texts]
+
+
+def _norm(w):
+    return w.lower().replace("'", "").replace("bh", "b").replace("xh", "x")
+
+
+def fragments_and_names(tr, vocab, prefix_thr=0.5, cap_thr=0.8):
+    """Shared-vocabulary tokens that are (a) grammatical fragments - very short
+    tokens or tokens that mostly stand directly before a masked name (Imvo's
+    separated prefixes such as 'base', 'ase') - or (b) residual names - tokens
+    capitalised in most of their raw occurrences (e.g. 'sprigg').
+    Computed on training data only."""
+    v = set(vocab)
+    occ, before_name = collections.Counter(), collections.Counter()
+    for t in tr.L3:
+        toks = t.split()
+        for i, w in enumerate(toks):
+            if w == "NAME":
+                continue
+            k = _norm(w)
+            if k in v:
+                occ[k] += 1
+                if i + 1 < len(toks) and toks[i + 1] == "NAME":
+                    before_name[k] += 1
+    cap, tot = collections.Counter(), collections.Counter()
+    for t in tr.raw:
+        for w in t.split():
+            a = re.sub(r"[^A-Za-z']", "", w)
+            if not a:
+                continue
+            k = _norm(a)
+            if k in v:
+                tot[k] += 1
+                cap[k] += a[0].isupper()
+    rows = []
+    for w in vocab:
+        pre = before_name[w] / max(1, occ[w])
+        capr = cap[w] / max(1, tot[w])
+        reason = ("short" if len(w) <= 3 else "prefix-before-name" if pre >= prefix_thr
+                  else "capitalised" if capr >= cap_thr else "")
+        if reason:
+            rows.append(dict(token=w, reason=reason, frac_before_name=round(pre, 3),
+                             frac_capitalised=round(capr, 3), train_count=occ[w]))
+    return pd.DataFrame(rows)
 
 
 def prepare_split(seg, seg_full, split_map):
@@ -194,8 +240,19 @@ def main():
     keepm = ~sg.dup
     tr, va, te = (sg[(sg.split == "train")], sg[(sg.split == "val") & keepm],
                   sg[(sg.split == "test") & keepm])
+    # Excluded tokens for the sensitivity analysis (fragments + residual names)
+    excl = fragments_and_names(tr, vocab)
+    excl.to_csv(f"{args.out}/excluded_fragments_names.csv", index=False)
+    content_clean = [w for w in content if w not in set(excl.token)]
+    stats["vocab_groups"] = dict(top100=len(top), remaining=len(content),
+                                 remaining_clean=len(content_clean),
+                                 excluded=excl.reason.value_counts().to_dict())
     fam = {}
-    for fname, voc in (("style_top100", top), ("content_noTop100", content)):
+    # labels: style_top100 = "top-100 frequent shared words";
+    #         content_noTop100 = "remaining shared vocabulary";
+    #         content_clean = remaining vocabulary minus fragments and names
+    for fname, voc in (("style_top100", top), ("content_noTop100", content),
+                       ("content_clean", content_clean)):
         X = [filt(d.L4.tolist(), voc) for d in (tr, va, te)]
         # vocabulary-restricted unigram models: tune C on validation
         best = (-1, None, None)
@@ -211,7 +268,7 @@ def main():
         r.update(cluster_bootstrap(te.y.values, p, te.issue.values))
         all_res.append(r)
         fam[fname] = (best[2], X, p)
-        log(r["model"], f"F1={r['macro_f1']:.3f}")
+        log(r["model"], f"F1={r['macro_f1']:.3f} BA={r['bal_acc']:.3f}")
 
     # non-content feature families: transcription quality / orthography
     raw_tr_counts = collections.Counter(w.lower() for t in tr.raw for w in t.split())
@@ -262,30 +319,56 @@ def main():
     sel = np.array([k for k, dd in enumerate(dists) if dd <= cal])
     msel = np.array([x for k in sel for x in pairs[k]])
     level_models = keep["fitted"]
+    pair_arr = msel.reshape(-1, 2)          # columns: Isigidimi idx, Imvo idx
+    rng_m = np.random.default_rng(0)
+    boot_pairs = [rng_m.integers(0, len(pair_arr), len(pair_arr)) for _ in range(1000)]
+
+    def matched_row(name, p_full, full_ba):
+        """BA on matched pairs + 95% CI from resampling pairs."""
+        p_m = p_full[msel]
+        bs = []
+        for idx in boot_pairs:
+            take = pair_arr[idx].ravel()
+            bs.append(metrics(yte[take], p_full[take])["bal_acc"])
+        lo, hi = np.percentile(bs, [2.5, 97.5])
+        return dict(model=name, full_bal_acc=full_ba, **metrics(yte[msel], p_m),
+                    bal_acc_ci_lo=lo, bal_acc_ci_hi=hi)
+
     match_rows = []
+    pos = {ix: k for k, ix in enumerate(te.index)}
     for (lv, mn), (m, dte) in level_models.items():
-        pmap = dict(zip(dte.index, dte.p))
-        if not all(te.index[k] in pmap for k in msel):
+        if lv == "L0" or not set(te.index) <= set(dte.index):
             continue
-        p = np.array([pmap[te.index[k]] for k in msel])
-        full_ = metrics(dte.y.values, dte.p.values)
-        match_rows.append(dict(model=f"{lv}-{mn}", full_bal_acc=full_["bal_acc"],
-                               **metrics(yte[msel], p)))
+        p_full = np.zeros(len(te))
+        for ix, pv in zip(dte.index, dte.p):
+            if ix in pos:
+                p_full[pos[ix]] = pv
+        match_rows.append(matched_row(f"{lv}-{mn}", p_full,
+                                      metrics(dte.y.values, dte.p.values)["bal_acc"]))
     for name, (m, p) in surf_models.items():
-        match_rows.append(dict(model=name, full_bal_acc=metrics(yte, p)["bal_acc"],
-                               **metrics(yte[msel], p[msel])))
+        match_rows.append(matched_row(name, p, metrics(yte, p)["bal_acc"]))
     m_c, X_c, p_c = fam["content_noTop100"]
-    match_rows.append(dict(model="L4-word[content]", full_bal_acc=metrics(yte, p_c)["bal_acc"],
-                           **metrics(yte[msel], p_c[msel])))
+    match_rows.append(matched_row("L4-word[content]", p_c, metrics(yte, p_c)["bal_acc"]))
     m_s, X_s, p_s = fam["style_top100"]
-    match_rows.append(dict(model="L4-word[style]", full_bal_acc=metrics(yte, p_s)["bal_acc"],
-                           **metrics(yte[msel], p_s[msel])))
-    smd_before = np.abs(Zte[imvo_idx].mean(0) - Zte[isig_idx].mean(0))
-    a, b = msel.reshape(-1, 2)[:, 0], msel.reshape(-1, 2)[:, 1]
-    smd_after = np.abs(Zte[b].mean(0) - Zte[a].mean(0))
+    match_rows.append(matched_row("L4-word[style]", p_s, metrics(yte, p_s)["bal_acc"]))
+    p_cc = fam["content_clean"][2]
+    match_rows.append(matched_row("L4-word[content_clean]", p_cc, metrics(yte, p_cc)["bal_acc"]))
+    # balance diagnostics: standardised mean difference per feature (in
+    # training-SD units), before matching (all test segments) and after
+    a, b = pair_arr[:, 0], pair_arr[:, 1]
+    smd_before = Zte[imvo_idx].mean(0) - Zte[isig_idx].mean(0)
+    smd_after = Zte[b].mean(0) - Zte[a].mean(0)
+    pd.DataFrame(dict(feature=SURFACE_NAMES + ORTHO_NAMES, smd_before=smd_before,
+                      smd_after=smd_after)).to_csv(f"{args.out}/matching_balance.csv",
+                                                    index=False)
+    pd.DataFrame(dict(isig_issue=te.issue.values[a], imvo_issue=te.issue.values[b],
+                      isig_year=te.year.values[a], imvo_year=te.year.values[b],
+                      distance=dists[sel])).to_csv(f"{args.out}/matched_pairs.csv", index=False)
     stats["matching"] = dict(n_pairs=int(len(sel)), caliper=float(cal),
-                             mean_abs_smd_before=float(smd_before.mean()),
-                             mean_abs_smd_after=float(smd_after.mean()),
+                             mean_abs_smd_before=float(np.abs(smd_before).mean()),
+                             mean_abs_smd_after=float(np.abs(smd_after).mean()),
+                             max_abs_smd_after=float(np.abs(smd_after).max()),
+                             n_features_abs_smd_after_gt_0_25=int((np.abs(smd_after) > 0.25).sum()),
                              n_issues_matched=int(te.iloc[msel].issue.nunique()))
     pd.DataFrame(match_rows).to_csv(f"{args.out}/matched_eval.csv", index=False)
     log("matched", stats["matching"])
@@ -301,7 +384,7 @@ def main():
     clean_te = te[te.y == 1 - noisy_label]
     stats["garbage_rate_by_paper"] = garbage.to_dict()
     stats["noisier_paper"] = noisy_paper
-    inj_rows = []
+    inj_rows, base_pred = [], {}
     for rate in [0.0, 0.02, 0.05, 0.10, 0.20, 0.40]:
         rng = np.random.default_rng(1)
         raw_noisy = [inject_noise(t, rate, rng) for t in clean_te.raw]
@@ -310,9 +393,16 @@ def main():
             lv, mn = key.split("-")
             m = level_models[(lv, mn)][0]
             X = raw_noisy if lv == "L1" else L4n
-            p = m.predict_proba(X)[:, 1]
-            inj_rows.append(dict(rate=rate, model=key, frac_pred_noisy_paper=float(
-                np.mean((p >= 0.5).astype(int) == noisy_label))))
+            pred = (m.predict_proba(X)[:, 1] >= 0.5).astype(int)
+            if rate == 0.0:
+                base_pred[key] = pred
+            b0 = base_pred[key]
+            inj_rows.append(dict(
+                rate=rate, model=key,
+                frac_pred_noisy_paper=float(np.mean(pred == noisy_label)),
+                # per-segment changes relative to the uncorrupted text
+                frac_flipped_to_noisy=float(np.mean((b0 != noisy_label) & (pred == noisy_label))),
+                frac_flipped_any=float(np.mean(b0 != pred))))
         log("inject", rate, [round(r_["frac_pred_noisy_paper"], 3) for r_ in inj_rows[-4:]])
     pd.DataFrame(inj_rows).to_csv(f"{args.out}/noise_injection.csv", index=False)
 
@@ -425,6 +515,66 @@ def main():
         perm.append(vals[q].mean() - vals[~q].mean())
     stats["lexicon_perm_p_political"] = float((np.abs(perm) >= abs(obs)).mean())
     stats["lexicon_obs_diff_political"] = float(obs)
+
+    # Year-controlled comparison: only years in which BOTH papers appear in the
+    # main window (Nov-Dec 1884, 1885, 1887, 1888; Isigidimi 1886 is missing).
+    # Per-year issue-level differences, their equal-weight average, and a
+    # permutation test that shuffles paper labels WITHIN each year.
+    both = mw_.copy()
+    years = sorted(set(both[both.paper == "IMVO"].year) & set(both[both.paper == "ISIG"].year))
+    both = both[both.year.isin(years)]
+    yrows = []
+    for k in ("political_per1k", "religious_per1k", "pol_share"):
+        diffs_y = []
+        for yv in years:
+            d = both[both.year == yv]
+            a_, b_ = d[d.paper == "IMVO"][k].values, d[d.paper == "ISIG"][k].values
+            bs = [rng.choice(a_, len(a_)).mean() - rng.choice(b_, len(b_)).mean()
+                  for _ in range(2000)]
+            lo, hi = np.percentile(bs, [2.5, 97.5])
+            yrows.append(dict(measure=k, year=int(yv), imvo=a_.mean(), isig=b_.mean(),
+                              diff=a_.mean() - b_.mean(), ci_lo=lo, ci_hi=hi,
+                              n_imvo=len(a_), n_isig=len(b_)))
+            diffs_y.append(a_.mean() - b_.mean())
+        obs_y = float(np.mean(diffs_y))
+        perm_y = []
+        for _ in range(5000):
+            dd = []
+            for yv in years:
+                d = both[both.year == yv]
+                lab_y = rng.permutation((d.paper == "IMVO").values)
+                v_ = d[k].values
+                dd.append(v_[lab_y].mean() - v_[~lab_y].mean())
+            perm_y.append(np.mean(dd))
+        stats.setdefault("lexicon_year_controlled", {})[k] = dict(
+            years=[int(x) for x in years], mean_within_year_diff=obs_y,
+            perm_p_within_year=float(max(1, (np.abs(perm_y) >= abs(obs_y)).sum()) / 5000),
+            n_years_imvo_higher=int(sum(x > 0 for x in diffs_y)))
+    pd.DataFrame(yrows).to_csv(f"{args.out}/lexicon_by_year_controlled.csv", index=False)
+    log("lexicon year-controlled", stats["lexicon_year_controlled"])
+
+    # Lexicon audit: per pattern, matches per paper, most frequent matched
+    # word types and two random concordance lines (main window only).
+    hits = collections.defaultdict(list)
+    main_seg = seg_all[seg_all.issue.str[5:12] >= MAIN_START]
+    for r_ in main_seg.itertuples():
+        toks = level2(r_.raw).lower().split()
+        for i, w in enumerate(toks):
+            for cat, pat, ww in lexicon_hits([w]):
+                hits[(cat, pat)].append((r_.paper, w, " ".join(toks[max(0, i - 5):i + 6])))
+    arows = []
+    rng_a = np.random.default_rng(0)
+    for (cat, pat), hs in sorted(hits.items()):
+        types = collections.Counter(w for _, w, _ in hs).most_common(5)
+        ex = [hs[j][2] for j in rng_a.choice(len(hs), size=min(2, len(hs)), replace=False)]
+        arows.append(dict(category=cat, pattern=pat,
+                          n_imvo=sum(p_ == "IMVO" for p_, _, _ in hs),
+                          n_isig=sum(p_ == "ISIG" for p_, _, _ in hs),
+                          top_types="; ".join(f"{w} ({c})" for w, c in types),
+                          example_1=ex[0] if ex else "", example_2=ex[1] if len(ex) > 1 else ""))
+    pd.DataFrame(arows).to_csv(f"{args.out}/lexicon_audit.csv", index=False)
+    pd.DataFrame([dict(stem=k, reason=v) for k, v in REJECTED.items()]).to_csv(
+        f"{args.out}/lexicon_rejected.csv", index=False)
     log("lexicon", lex_summary)
 
     pd.DataFrame(all_res).to_csv(f"{args.out}/results.csv", index=False)
@@ -434,4 +584,9 @@ def main():
 
 
 if __name__ == "__main__":
+    # fastText (gensim) seeds its vectors with Python's string hash, which is
+    # randomised per process unless PYTHONHASHSEED is fixed: re-launch with it.
+    if os.environ.get("PYTHONHASHSEED") != "0":
+        os.environ["PYTHONHASHSEED"] = "0"
+        os.execv(sys.executable, [sys.executable] + sys.argv)
     main()

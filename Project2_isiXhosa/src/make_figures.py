@@ -66,14 +66,17 @@ def fig_ladder(res, matched, out):
     # (b) feature families, full test set vs non-content-matched subset
     rows = [("non-content\n(noise+orthog.)", "noncontent_gb"),
             ("orthography\nonly", "ortho_gb"), ("transcription\nnoise only", "surface_gb"),
-            ("style: top-100\nwords (L4)", "L4-word[style]"),
-            ("content: L4 minus\ntop-100", "L4-word[content]")]
+            ("top-100 frequent\nwords (L4)", "L4-word[style]"),
+            ("remaining shared\nvocabulary (L4)", "L4-word[content]")]
     mt = matched.set_index("model")
     y = np.arange(len(rows))[::-1]
     for yi, (lab, key) in zip(y, rows):
         full, mat = mt.loc[key, "full_bal_acc"], mt.loc[key, "bal_acc"]
         bx.plot([full, mat], [yi, yi], color=GRID, lw=2.2, zorder=1)
         bx.scatter(full, yi, s=26, color=BLUE, zorder=3, edgecolor="white", lw=0.6)
+        if "bal_acc_ci_lo" in mt.columns:
+            bx.plot([mt.loc[key, "bal_acc_ci_lo"], mt.loc[key, "bal_acc_ci_hi"]], [yi - 0.18] * 2,
+                    color=ORANGE, lw=1.0, zorder=2)
         bx.scatter(mat, yi, s=26, color=ORANGE, marker="s", zorder=3, edgecolor="white", lw=0.6)
     bx.axvline(0.5, color=MUTED, lw=0.8, ls="--")
     bx.set_yticks(y, [r[0] for r in rows])
@@ -160,10 +163,11 @@ def fig_noise(out):
     for key, c, mk in (("L1-word", BLUE, "o"), ("L1-char", ORANGE, "s"),
                        ("L4-word", AQUA, "^"), ("L4-char", VIOLET, "D")):
         d = nz[nz.model == key]
-        ax.plot(100 * d.rate, d.frac_pred_noisy_paper, color=c, marker=mk, ms=4, label=key)
+        col = "frac_flipped_to_noisy" if "frac_flipped_to_noisy" in d else "frac_pred_noisy_paper"
+        ax.plot(100 * d.rate, d[col], color=c, marker=mk, ms=4, label=key)
     ax.set_xlabel("tokens corrupted in Isigidimi test segments (%)")
-    ax.set_ylabel("share classified as Imvo")
-    ax.set_ylim(0, 1)
+    ax.set_ylabel("segments flipped to Imvo")
+    ax.set_ylim(0, 0.5)
     ax.legend(frameon=False, ncol=2)
     fig.savefig(f"{out}/figures/figS1_noise.pdf")
     fig.savefig(f"{out}/figures/figS1_noise.png")
@@ -192,21 +196,24 @@ def fig_surface(out):
 
 
 def table_main(res, matched, out):
-    """Compact results table (seed-13 split, cluster-bootstrap CIs)."""
+    """Main results table (seed-13 split, cluster-bootstrap CIs) as a complete
+    tabular, so the report can input it directly."""
     s13 = res[res.tag.isin(["random_s13", "family_s13"])]
     seeds = res[res.tag.str.startswith("random_s")].groupby(["level", "model"]).macro_f1.std()
     mt = matched.set_index("model")
-    rows = [("L0", "char", "Full page text, char n-grams", "L0-char"),
-            ("L1", "char", "isiXhosa only, char n-grams", "L1-char"),
+    rows = [("L0", "char", "Full page text, char", "L0-char"),
+            ("L1", "char", "isiXhosa only, char", "L1-char"),
             ("L1", "word", "isiXhosa only, words", "L1-word"),
-            ("L4", "word", "Shared vocab., words (uni+bi)", "L4-word"),
-            ("L4", "fasttext", "Shared vocab., fastText", "L4-fasttext"),
-            ("L4", "word[content_noTop100]", "Content words only", "L4-word[content]"),
-            ("L4", "word[style_top100]", "Top-100 (function) words only", "L4-word[style]"),
-            ("raw", "surface_gb", "Transcription features (GB)", "surface_gb"),
-            ("raw", "ortho_gb", "Orthography features (GB)", "ortho_gb"),
-            ("raw", "noncontent_gb", "All non-content features (GB)", "noncontent_gb")]
-    lines = []
+            ("L4", "word", "L4 shared vocab., words", "L4-word"),
+            ("L4", "fasttext", "L4 shared vocab., fastText", "L4-fasttext"),
+            ("L4", "word[style_top100]", "L4 top-100 frequent words", "L4-word[style]"),
+            ("L4", "word[content_noTop100]", "L4 remaining vocabulary", "L4-word[content]"),
+            ("L4", "word[content_clean]", "\\quad minus fragments, names", "L4-word[content_clean]"),
+            ("raw", "surface_gb", "Transcription features", "surface_gb"),
+            ("raw", "ortho_gb", "Orthography features", "ortho_gb"),
+            ("raw", "noncontent_gb", "All non-content features", "noncontent_gb")]
+    lines = [r"\begin{tabular}{@{}lcccc@{}}", r"\toprule",
+             r"Representation & Macro-F1 [CI] & s.d. & BA & BA$_m$ \\", r"\midrule"]
     for lv, m, lab, mkey in rows:
         r = s13[(s13.level == lv) & (s13.model == m)]
         if r.empty:
@@ -219,6 +226,7 @@ def table_main(res, matched, out):
         mb_s = f"{mb:.2f}" if np.isfinite(mb) else "--"
         lines.append(f"{lab} & {r.macro_f1:.3f} [{lo:.2f}, {hi:.2f}] & {sd_s} & "
                      f"{r.bal_acc:.2f} & {mb_s} \\\\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
     with open(f"{out}/table_main.tex", "w") as fh:
         fh.write("\n".join(lines) + "\n")
     print("\n".join(lines))
@@ -276,13 +284,96 @@ def supp_tables(res, out):
     L.append(r"\begin{tabular}{@{}p{0.45\linewidth}p{0.45\linewidth}@{}}\toprule Favour Imvo & Favour Isigidimi \\ \midrule")
     L.append("\\emph{" + ", ".join(a) + "} & \\emph{" + ", ".join(b) + "} \\\\")
     L.append(r"\bottomrule\end{tabular}\label{tab:s5}\end{table}")
+    L += supp_tables_extra(out)
     with open(f"{out}/supp_tables.tex", "w") as fh:
         fh.write("\n".join(L) + "\n")
+
+
+def tex(s):
+    """Escape text from CSV files for LaTeX."""
+    for a, b in (("\\", r"\textbackslash{}"), ("&", r"\&"), ("%", r"\%"), ("$", r"\$"),
+                 ("#", r"\#"), ("_", r"\_"), ("{", r"\{"), ("}", r"\}"), ("^", r"\^{}")):
+        s = str(s).replace(a, b)
+    return s
+
+
+def supp_tables_extra(out):
+    L = []
+    # matched evaluation with CIs
+    m = pd.read_csv(f"{out}/matched_eval.csv")
+    names = {"L1-word": "L1 words", "L1-char": "L1 char", "L2-word": "L2 words",
+             "L2-char": "L2 char", "L3-word": "L3 words", "L3-char": "L3 char",
+             "L4-word": "L4 words", "L4-char": "L4 char",
+             "L4-word[style]": "L4 top-100 frequent words",
+             "L4-word[content]": "L4 remaining vocabulary",
+             "L4-word[content_clean]": "L4 remaining, minus fragments/names",
+             "surface_lr": "Transcription (LR)", "surface_gb": "Transcription (GB)",
+             "ortho_lr": "Orthography (LR)", "ortho_gb": "Orthography (GB)",
+             "noncontent_lr": "All non-content (LR)", "noncontent_gb": "All non-content (GB)"}
+    L.append(r"\begin{table}[h]\centering\small\caption{Matched evaluation (seed 13): balanced accuracy on all test segments and on the matched pairs, with a 95\% CI from resampling pairs (1{,}000 resamples).}")
+    L.append(r"\begin{tabular}{@{}lccc@{}}\toprule Model & BA (all) & BA (matched) & 95\% CI \\ \midrule")
+    for r in m.itertuples():
+        if r.model not in names:
+            continue
+        L.append(f"{names[r.model]} & {r.full_bal_acc:.3f} & {r.bal_acc:.3f} & "
+                 f"[{r.bal_acc_ci_lo:.2f}, {r.bal_acc_ci_hi:.2f}] \\\\")
+    L.append(r"\bottomrule\end{tabular}\label{tab:matched}\end{table}")
+    # balance diagnostics
+    b = pd.read_csv(f"{out}/matching_balance.csv")
+    st = json.load(open(f"{out}/stats.json"))["matching"]
+    L.append(r"\begin{table}[h]\centering\small\caption{Per-feature balance before and after matching: difference in means (Imvo $-$ Isigidimi) in training-standard-deviation units. "
+             f"{st['n_pairs']} pairs from {st['n_issues_matched']} issues; mean $|$SMD$|$ {st['mean_abs_smd_before']:.2f} $\\to$ {st['mean_abs_smd_after']:.2f}; "
+             f"{st['n_features_abs_smd_after_gt_0_25']} feature(s) still exceed 0.25 after matching."
+             r"}")
+    L.append(r"\begin{tabular}{@{}lrr@{}}\toprule Feature & Before & After \\ \midrule")
+    for r in b.itertuples():
+        L.append(f"{tex(r.feature.replace('frac_', ''))} & {r.smd_before:+.2f} & {r.smd_after:+.2f} \\\\")
+    L.append(r"\bottomrule\end{tabular}\label{tab:balance}\end{table}")
+    # year-controlled lexicon
+    y = pd.read_csv(f"{out}/lexicon_by_year_controlled.csv")
+    yc = json.load(open(f"{out}/stats.json"))["lexicon_year_controlled"]
+    lab = {"political_per1k": "Political / 1k", "religious_per1k": "Religious / 1k",
+           "pol_share": "Political share"}
+    cap = "; ".join(f"{lab[k]}: mean within-year difference {v['mean_within_year_diff']:+.2f}, "
+                    f"within-year permutation $p={v['perm_p_within_year']:.4f}$"
+                    for k, v in yc.items())
+    L.append(r"\begin{table*}[h]\centering\small\caption{Year-controlled lexicon comparison: years in which both papers appear (Isigidimi 1886 is missing; 1884 = Nov--Dec). Issue-level means; CI of the difference from bootstrapping issues within the year. "
+             + cap + ".}")
+    L.append(r"\begin{tabular}{@{}llcccccc@{}}\toprule Measure & Year & Imvo & Isigidimi & Difference & 95\% CI & Issues (I/Is) \\ \midrule")
+    for r in y.itertuples():
+        L.append(f"{lab[r.measure]} & {r.year} & {r.imvo:.2f} & {r.isig:.2f} & {r.diff:+.2f} & "
+                 f"[{r.ci_lo:.2f}, {r.ci_hi:.2f}] & {r.n_imvo}/{r.n_isig} \\\\")
+    L.append(r"\bottomrule\end{tabular}\label{tab:yearlex}\end{table*}")
+    # lexicon audit
+    au = pd.read_csv(f"{out}/lexicon_audit.csv").fillna("")
+    L.append(r"\begin{table*}[h]\centering\scriptsize\caption{Lexicon audit (main window). For each pattern: matches in each paper, the five most frequent matched word types, and one randomly drawn concordance line (lower-cased, punctuation removed). Patterns were drafted from general knowledge of isiXhosa before any per-paper comparison; the concordance check removed false matches (Table~\ref{tab:rejected}) and no pattern was added or removed because of the direction of a difference. Glosses are the author's; a first-language speaker has not reviewed them.}")
+    L.append(r"\begin{tabular}{@{}llrrp{0.30\textwidth}p{0.33\textwidth}@{}}\toprule Cat. & Pattern & Imvo & Isig. & Top matched types & Example context \\ \midrule")
+    for r in au.itertuples():
+        L.append(f"{r.category[:3]}. & \\texttt{{{tex(r.pattern)}}} & {r.n_imvo} & {r.n_isig} & "
+                 f"\\emph{{{tex(r.top_types)}}} & \\emph{{{tex(r.example_1)}}} \\\\")
+    L.append(r"\bottomrule\end{tabular}\label{tab:audit}\end{table*}")
+    rj = pd.read_csv(f"{out}/lexicon_rejected.csv")
+    L.append(r"\begin{table}[h]\centering\small\caption{Candidate stems rejected or moved after the concordance check.}")
+    L.append(r"\begin{tabular}{@{}lp{0.62\linewidth}@{}}\toprule Stem & Reason \\ \midrule")
+    for r in rj.itertuples():
+        L.append(f"\\emph{{{tex(r.stem)}}} & {tex(r.reason)} \\\\")
+    L.append(r"\bottomrule\end{tabular}\label{tab:rejected}\end{table}")
+    # excluded fragments / names
+    ex = pd.read_csv(f"{out}/excluded_fragments_names.csv")
+    L.append(r"\begin{table}[h]\centering\small\caption{Tokens removed from the remaining shared vocabulary in the sensitivity model: short tokens ($\leq$3 letters), tokens that precede a masked name in $\geq$50\% of training occurrences (separated prefixes), and tokens capitalised in $\geq$80\% of raw occurrences (residual names). Examples are the most frequent in each group.}")
+    L.append(r"\begin{tabular}{@{}lrp{0.55\linewidth}@{}}\toprule Reason & $n$ & Examples \\ \midrule")
+    for reason, g in ex.groupby("reason"):
+        eg = ", ".join(g.sort_values("train_count", ascending=False).token.head(12))
+        L.append(f"{tex(reason)} & {len(g)} & \\emph{{{tex(eg)}}} \\\\")
+    L.append(r"\bottomrule\end{tabular}\label{tab:excluded}\end{table}")
+    return L
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="outputs")
+    ap.add_argument("--report", default="report",
+                    help="also copy figures/tables used by the LaTeX report here ('' = skip)")
     a = ap.parse_args()
     os.makedirs(f"{a.out}/figures", exist_ok=True)
     res = load(a.out)
@@ -300,6 +391,13 @@ def main():
         ["macro_f1", "bal_acc"]].agg(["mean", "std", "count"]).round(4)
     seedagg.to_csv(f"{a.out}/results_seed_mean_sd.csv")
     print(seedagg)
+    if a.report and os.path.isdir(a.report):
+        import shutil
+        for f in ["fig1_ladder_col", "fig1_ladder", "fig2_eras", "figS1_noise", "figS2_surface"]:
+            shutil.copy(f"{a.out}/figures/{f}.pdf", a.report)
+        for f in ["table_main.tex", "supp_tables.tex"]:
+            shutil.copy(f"{a.out}/{f}", a.report)
+        print(f"copied figures and tables into {a.report}/")
 
 
 if __name__ == "__main__":

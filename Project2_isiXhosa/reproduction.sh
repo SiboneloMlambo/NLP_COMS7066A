@@ -34,14 +34,21 @@ while [[ $# -gt 0 ]]; do
 done
 
 say() { echo "[$(date +%H:%M:%S)] $*"; }
+export PYTHONHASHSEED=0          # deterministic fastText (gensim) training
 PY="${PYTHON:-python3}"
 command -v "$PY" >/dev/null || PY=python
 
 # --------------------------------------------------------------- 1. packages
 if [[ $INSTALL -eq 1 ]]; then
   say "Installing requirements"
-  "$PY" -m pip install -q -r requirements.txt 2>/dev/null \
-    || "$PY" -m pip install -q --break-system-packages -r requirements.txt
+  if ! { "$PY" -m pip install -q -r requirements.txt 2>/dev/null \
+         || "$PY" -m pip install -q --break-system-packages -r requirements.txt 2>/dev/null; }; then
+    say "  pinned versions unavailable for this Python; installing compatible versions"
+    say "  (results may then differ slightly in the last decimal places)"
+    sed 's/==.*//' requirements.txt | grep -v '^#' > /tmp/req_unpinned.txt
+    "$PY" -m pip install -q -r /tmp/req_unpinned.txt 2>/dev/null \
+      || "$PY" -m pip install -q --break-system-packages -r /tmp/req_unpinned.txt
+  fi
 fi
 
 # --------------------------------------------------------------- 2. data

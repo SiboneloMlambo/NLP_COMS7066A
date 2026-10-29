@@ -1,23 +1,23 @@
 \begin{table}[h]\centering\small\caption{Cleaning ladder, test macro-F1 / balanced accuracy, mean $\pm$ s.d.\ over three issue-grouped splits (seeds 13, 21, 42).}
 \begin{tabular}{@{}llcc@{}}\toprule Level & Model & Macro-F1 & Bal.\ acc. \\ \midrule
 L0 & char & 0.937 $\pm$ 0.010 & 0.929 $\pm$ 0.007 \\
-L0 & fastText & 0.824 $\pm$ 0.030 & 0.866 $\pm$ 0.014 \\
+L0 & fastText & 0.829 $\pm$ 0.028 & 0.866 $\pm$ 0.014 \\
 L0 & CNB & 0.812 $\pm$ 0.029 & 0.875 $\pm$ 0.020 \\
 L0 & word & 0.902 $\pm$ 0.008 & 0.887 $\pm$ 0.006 \\
 L1 & char & 0.927 $\pm$ 0.012 & 0.917 $\pm$ 0.017 \\
-L1 & fastText & 0.822 $\pm$ 0.005 & 0.841 $\pm$ 0.007 \\
+L1 & fastText & 0.807 $\pm$ 0.015 & 0.830 $\pm$ 0.007 \\
 L1 & CNB & 0.857 $\pm$ 0.021 & 0.861 $\pm$ 0.010 \\
 L1 & word & 0.891 $\pm$ 0.009 & 0.884 $\pm$ 0.011 \\
 L2 & char & 0.916 $\pm$ 0.017 & 0.905 $\pm$ 0.020 \\
-L2 & fastText & 0.796 $\pm$ 0.009 & 0.817 $\pm$ 0.011 \\
+L2 & fastText & 0.798 $\pm$ 0.014 & 0.817 $\pm$ 0.017 \\
 L2 & CNB & 0.852 $\pm$ 0.016 & 0.854 $\pm$ 0.005 \\
 L2 & word & 0.886 $\pm$ 0.013 & 0.872 $\pm$ 0.020 \\
 L3 & char & 0.906 $\pm$ 0.025 & 0.896 $\pm$ 0.029 \\
-L3 & fastText & 0.764 $\pm$ 0.013 & 0.786 $\pm$ 0.009 \\
+L3 & fastText & 0.758 $\pm$ 0.025 & 0.783 $\pm$ 0.022 \\
 L3 & CNB & 0.819 $\pm$ 0.013 & 0.822 $\pm$ 0.010 \\
 L3 & word & 0.859 $\pm$ 0.016 & 0.846 $\pm$ 0.020 \\
 L4 & char & 0.816 $\pm$ 0.007 & 0.818 $\pm$ 0.015 \\
-L4 & fastText & 0.740 $\pm$ 0.002 & 0.769 $\pm$ 0.009 \\
+L4 & fastText & 0.737 $\pm$ 0.018 & 0.768 $\pm$ 0.005 \\
 L4 & CNB & 0.767 $\pm$ 0.009 & 0.801 $\pm$ 0.017 \\
 L4 & word & 0.839 $\pm$ 0.019 & 0.829 $\pm$ 0.026 \\
 \bottomrule\end{tabular}\label{tab:s1}\end{table}
@@ -44,9 +44,110 @@ L4 & word & 0.836 & 0.824 & 0.817 & 0.815 \\
 Isigidimi 1876-80 (pre-Jabavu) & 51 & 8.93 [8.12, 9.80] & 8.23 [7.08, 9.40] & 0.54 [0.49, 0.58] & 0.55 & 58 \\
 Isigidimi 1881-Oct 1884 (Jabavu) & 56 & 10.04 [9.00, 11.12] & 4.76 [4.22, 5.34] & 0.67 [0.63, 0.70] & 0.60 & 66 \\
 Isigidimi Nov 1884-88 (post-Jabavu) & 38 & 7.38 [6.22, 8.73] & 5.14 [4.32, 5.98] & 0.59 [0.54, 0.63] & 0.34 & 26 \\
-Imvo Nov 1884-88 & 211 & 14.06 [13.32, 14.79] & 3.23 [3.01, 3.47] & 0.80 [0.78, 0.81] & 0.78 & 88 \\
+Imvo Nov 1884-88 & 211 & 13.97 [13.24, 14.70] & 3.23 [3.01, 3.47] & 0.80 [0.78, 0.81] & 0.78 & 88 \\
 \bottomrule\end{tabular}\label{tab:s4}\end{table*}
 \begin{table}[h]\centering\small\caption{Twenty largest-weight features of the L4 content model, in order (seed 13). Glosses for selected items are given in the Results.}
 \begin{tabular}{@{}p{0.45\linewidth}p{0.45\linewidth}@{}}\toprule Favour Imvo & Favour Isigidimi \\ \midrule
 \emph{njengokuba, abamnyama, mayelana, base, ase, uku, sprigg, egqitileyo, kukuba, ba, zetu, epepeni, suka, omnyama, ixabiso, oka, okokuba, lokuba, amawetu, kwelilizwe} & \emph{imbali, ed, ngoko, ngosuku, malunga, uzele, suke, ezinje, londawo, inani, um, kanjalo, mbali, evekini, umlambo, ngolwe, ingu, ngxoxo, kwase, ndawo} \\
 \bottomrule\end{tabular}\label{tab:s5}\end{table}
+\begin{table}[h]\centering\small\caption{Matched evaluation (seed 13): balanced accuracy on all test segments and on the matched pairs, with a 95\% CI from resampling pairs (1{,}000 resamples).}
+\begin{tabular}{@{}lccc@{}}\toprule Model & BA (all) & BA (matched) & 95\% CI \\ \midrule
+L1 words & 0.880 & 0.854 & [0.81, 0.90] \\
+L1 char & 0.906 & 0.862 & [0.82, 0.90] \\
+L2 words & 0.857 & 0.832 & [0.79, 0.87] \\
+L2 char & 0.897 & 0.851 & [0.81, 0.89] \\
+L3 words & 0.847 & 0.802 & [0.76, 0.84] \\
+L3 char & 0.880 & 0.832 & [0.79, 0.87] \\
+L4 words & 0.837 & 0.810 & [0.76, 0.85] \\
+L4 char & 0.814 & 0.806 & [0.76, 0.85] \\
+Transcription (LR) & 0.687 & 0.578 & [0.54, 0.61] \\
+Transcription (GB) & 0.735 & 0.616 & [0.57, 0.66] \\
+Orthography (LR) & 0.831 & 0.735 & [0.69, 0.78] \\
+Orthography (GB) & 0.834 & 0.728 & [0.68, 0.77] \\
+All non-content (LR) & 0.858 & 0.750 & [0.71, 0.79] \\
+All non-content (GB) & 0.849 & 0.750 & [0.70, 0.79] \\
+L4 remaining vocabulary & 0.808 & 0.780 & [0.73, 0.82] \\
+L4 top-100 frequent words & 0.749 & 0.709 & [0.66, 0.76] \\
+L4 remaining, minus fragments/names & 0.779 & 0.746 & [0.69, 0.80] \\
+\bottomrule\end{tabular}\label{tab:matched}\end{table}
+\begin{table}[h]\centering\small\caption{Per-feature balance before and after matching: difference in means (Imvo $-$ Isigidimi) in training-standard-deviation units. 134 pairs from 35 issues; mean $|$SMD$|$ 0.29 $\to$ 0.08; 1 feature(s) still exceed 0.25 after matching.}
+\begin{tabular}{@{}lrr@{}}\toprule Feature & Before & After \\ \midrule
+mean\_tok\_len & +0.05 & +0.13 \\
+sd\_tok\_len & +0.50 & +0.18 \\
+short\_tok & +0.30 & +0.07 \\
+long\_tok & +0.20 & +0.03 \\
+upper\_chars & +0.10 & -0.11 \\
+punct\_chars & -0.38 & -0.10 \\
+digit\_chars & +0.08 & -0.04 \\
+nonascii\_chars & +0.27 & +0.04 \\
+vowelless\_tok & +0.28 & +0.08 \\
+mixed\_alnum\_tok & +0.08 & -0.01 \\
+rare\_tok & -0.40 & -0.08 \\
+type\_token\_ratio & -0.16 & -0.02 \\
+english\_func & +0.27 & -0.02 \\
+cap\_initial\_tok & +0.24 & +0.03 \\
+split\_fragment & -0.01 & +0.00 \\
+bh\_tok & +0.82 & +0.29 \\
+xh\_tok & +0.54 & +0.04 \\
+elision\_tok & -0.71 & -0.22 \\
+hyphen\_tok & -0.10 & -0.09 \\
+\bottomrule\end{tabular}\label{tab:balance}\end{table}
+\begin{table*}[h]\centering\small\caption{Year-controlled lexicon comparison: years in which both papers appear (Isigidimi 1886 is missing; 1884 = Nov--Dec). Issue-level means; CI of the difference from bootstrapping issues within the year. Political / 1k: mean within-year difference +5.91, within-year permutation $p=0.0002$; Religious / 1k: mean within-year difference -2.25, within-year permutation $p=0.0002$; Political share: mean within-year difference +0.23, within-year permutation $p=0.0002$.}
+\begin{tabular}{@{}llcccccc@{}}\toprule Measure & Year & Imvo & Isigidimi & Difference & 95\% CI & Issues (I/Is) \\ \midrule
+Political / 1k & 1884 & 10.85 & 6.55 & +4.30 & [1.41, 6.97] & 9/2 \\
+Political / 1k & 1885 & 11.88 & 5.74 & +6.14 & [4.13, 7.90] & 49/12 \\
+Political / 1k & 1887 & 15.84 & 8.75 & +7.10 & [4.11, 9.70] & 49/12 \\
+Political / 1k & 1888 & 13.88 & 7.78 & +6.10 & [2.83, 9.08] & 52/12 \\
+Religious / 1k & 1884 & 1.90 & 5.94 & -4.04 & [-5.36, -2.73] & 9/2 \\
+Religious / 1k & 1885 & 3.32 & 5.51 & -2.19 & [-3.46, -0.86] & 49/12 \\
+Religious / 1k & 1887 & 3.02 & 3.59 & -0.57 & [-1.73, 0.53] & 49/12 \\
+Religious / 1k & 1888 & 3.97 & 6.19 & -2.21 & [-4.06, -0.43] & 52/12 \\
+Political share & 1884 & 0.83 & 0.52 & +0.31 & [0.26, 0.36] & 9/2 \\
+Political share & 1885 & 0.77 & 0.51 & +0.26 & [0.17, 0.35] & 49/12 \\
+Political share & 1887 & 0.83 & 0.71 & +0.13 & [0.06, 0.19] & 49/12 \\
+Political share & 1888 & 0.76 & 0.56 & +0.20 & [0.11, 0.29] & 52/12 \\
+\bottomrule\end{tabular}\label{tab:yearlex}\end{table*}
+\begin{table*}[h]\centering\scriptsize\caption{Lexicon audit (main window). For each pattern: matches in each paper, the five most frequent matched word types, and one randomly drawn concordance line (lower-cased, punctuation removed). Patterns were drafted from general knowledge of isiXhosa before any per-paper comparison; the concordance check removed false matches (Table~\ref{tab:rejected}) and no pattern was added or removed because of the direction of a difference. Glosses are the author's; a first-language speaker has not reviewed them.}
+\begin{tabular}{@{}llrrp{0.30\textwidth}p{0.33\textwidth}@{}}\toprule Cat. & Pattern & Imvo & Isig. & Top matched types & Example context \\ \midrule
+pol. & \texttt{koloni} & 1117 & 159 & \emph{koloni (1108); ikoloni (89); yasekoloni (22); mkoloni (14); umkoloni (9)} & \emph{lase bechuanaland liya kuhlonyelwa kule koloni nokuba u montsiwa seleteta ntonina} \\
+pol. & \texttt{lungelo} & 1139 & 212 & \emph{amalungelo (346); ilungelo (294); lungelo (94); nelungelo (56); namalungelo (51)} & \emph{ngamatanda mfazwe encediswa zizihlobo mpi namalungelo abo ilungelo la mampondo ubelenze} \\
+pol. & \texttt{mantyi} & 1847 & 155 & \emph{mantyi (605); imantyi (487); yimantyi (128); umantyi (126); yemantyi (94)} & \emph{emva kokutabata inteto yetu engokuba imantyi iyakuhlala esihlalweni ngomso edikeni ukuva} \\
+pol. & \texttt{miteto} & 487 & 65 & \emph{imiteto (245); miteto (96); lemiteto (34); nemiteto (28); ngemiteto (22)} & \emph{imimiselo nemi gqaliselo nokuba yi miteto nokuba zinxalenye zayo ecaseneyo mhlaimbi} \\
+pol. & \texttt{mteto} & 2206 & 278 & \emph{umteto (727); lomteto (490); mteto (368); ngomteto (173); ngumteto (99)} & \emph{nokupendula imicimbi yombuso banayo imfanelo ngomteto wokunyula owebala labo eze kulenkundla} \\
+pol. & \texttt{nyula} & 324 & 41 & \emph{lokunyula (65); ukunyula (39); onganyula (24); yokunyula (16); ngokunyula (13)} & \emph{bacelwe ukuba banganqopisani namntu ungoyena bayakumnyula ade onke amadoda ayakuma abe} \\
+pol. & \texttt{nyulo} & 232 & 32 & \emph{unyulo (73); wonyulo (28); lonyulo (18); yonyulo (18); nyulo (17)} & \emph{eziyakuze zibakanyele i feltkornet ngomhla wonyulo kuba zoti zakuba zibuze igama} \\
+pol. & \texttt{nyulw} & 548 & 68 & \emph{kunyulwe (89); enyulwe (64); kunyulwa (45); ukunyulwa (32); anyulwe (30)} & \emph{u faku col griffith yena anyulwe eko lomadinga anjalo esenziwa ngawayesilwa} \\
+pol. & \texttt{palamente} & 1842 & 114 & \emph{palamente (1857); ipalamente (46); palamenteni (31); epalamente (15); bapalamente (1)} & \emph{kokuba ade abe uyalelwe yi palamente u mr j umnumzetu unga} \\
+pol. & \texttt{rafu} & 874 & 84 & \emph{irafu (400); rafu (347); lerafu (39); yerafu (35); lorafu (23)} & \emph{read lokuba bazihlaule ngexesha i rafu zabo kuba kungenakubako lulaulo ngapandle} \\
+pol. & \texttt{rulumen} & 3124 & 318 & \emph{rulumente (1996); rulumeni (1410); rulumenteni (7); urulumente (5); urulumeni (3)} & \emph{gaso ' akasoia aye ku rulumeni ' makabe u qipu yinkosi} \\
+pol. & \texttt{tyala} & 2349 & 300 & \emph{ityala (476); amatyala (449); tyala (247); yamatyala (138); ngetyala (66)} & \emph{laya ixelwe ekuqaleni ngokubheki selele kumatyala okwapula iziqendwana ezi zinga a} \\
+pol. & \texttt{vota} & 202 & 32 & \emph{lokuvota (54); kuvota (19); ukuvota (18); vota (15); yokuvota (14)} & \emph{abantsundu ngabenga nikwanga nelungelo loku vota ayitandi inxenye yakubona sivota ke} \\
+pol. & \texttt{voti} & 1051 & 175 & \emph{ivoti (299); voti (207); evotini (140); abavoti (99); ngevoti (56)} & \emph{lonto kuti amawetu anevoti makangake anikele indlebe zawo konomgogwana} \\
+rel. & \texttt{\^{}yesu\$} & 30 & 48 & \emph{yesu (78)} & \emph{ibuhlungu kuba ndilele apa no yesu inkosi yam ute xa bekusondela} \\
+rel. & \texttt{bafundisi} & 952 & 281 & \emph{abafundisi (436); yabafundisi (137); ngabafundisi (97); bafundisi (81); nabafundisi (77)} & \emph{ke ndiveleni obubunzima zinkosi zam bafundisi base wesileni ndiyanitandaza ndiyazitoba ndisisicaka} \\
+rel. & \texttt{cawa} & 674 & 92 & \emph{cawa (478); ingcawa (156); ngcawa (64); yencawa (12); ngecawa (7)} & \emph{ibokwe inani lotnkosi ngomhla we cawa dec wawumayelana senza ityalike enkulu} \\
+rel. & \texttt{kristu} & 80 & 151 & \emph{kristu (206); makristu (8); kristukazi (8); mkristu (3); amakristu (2)} & \emph{siyibona ukwapulwa kwayo lemimiselo ka kristu kwi eamente} \\
+rel. & \texttt{mfundisi} & 932 & 231 & \emph{umfundisi (488); mfundisi (162); ngumfundisi (108); nomfundisi (55); yomfundisi (48)} & \emph{nokuba ngabapina ngapandle kwamatanda into egumfundisi omkulu ngezimini endaba besingati simi} \\
+rel. & \texttt{ngcwele} & 75 & 42 & \emph{oyingcwele (29); ongcwele (17); ezingcwele (16); ngcwele (8); ngcweleshe (6)} & \emph{ngokufunda amaculo la ati yerusalem engcwele eyase zulwini ndilundwendwe ndingumhambi ezulwini} \\
+rel. & \texttt{nkonzo} & 107 & 27 & \emph{inkonzo (85); nkonzo (8); lenkonzo (6); kwinkonzo (5); kwenkonzo (4)} & \emph{zatakazelwa kunene kulandawo yaqalwa kuyo lenkonzo ka mahommet babesiti namhla olu} \\
+rel. & \texttt{sono\$} & 89 & 25 & \emph{isono (42); sisono (20); sono (12); ngesono (8); nesono (8)} & \emph{nazintsizi kwa nazifo asiko kwa nesono akuko maxala nangqumbo akuko sipelo} \\
+rel. & \texttt{tandaz} & 678 & 169 & \emph{umtandazo (146); imitandazo (76); ngomtandazo (73); abatandazi (34); lomtandazo (22)} & \emph{october ozayo intlanganiso ivalwe ngo mtandazo j a v port elisabeth} \\
+rel. & \texttt{tixo} & 394 & 291 & \emph{tixo (678); otixo (1); botixo (1); bezitixo (1); likatixo (1)} & \emph{eyirola imali ngokwaneleyo wanga u tixo angasikelela kumzamo wenu lentlanganiso yangena} \\
+rel. & \texttt{vangeli} & 76 & 34 & \emph{vangeli (39); umvangeli (21); ivangeli (14); mvangeli (12); abavangeli (6)} & \emph{ugama lingezantsi nfuna u m vangeli ne titshala ezimbini ezine certificates} \\
+rel. & \texttt{zibalo} & 14 & 25 & \emph{izibalo (17); zibalo (11); yezibalo (4); bezibalo (1); zezibalo (1)} & \emph{ilahlekise izilumko ezilinani malunga nentyilo yezibalo commentators yiyo le ke kanye} \\
+\bottomrule\end{tabular}\label{tab:audit}\end{table*}
+\begin{table}[h]\centering\small\caption{Candidate stems rejected or moved after the concordance check.}
+\begin{tabular}{@{}lp{0.62\linewidth}@{}}\toprule Stem & Reason \\ \midrule
+\emph{kolwa} & mostly 'kolwandle' (sea); 'kolwa' (believe) is not specifically religious \\
+\emph{bunga} & mostly unrelated words ('bungane', '-bungatengiswa') \\
+\emph{lawul} & mostly 'hlawula' (pay, fine) \\
+\emph{yesu} & unanchored form matches 'yesuka' (start); kept only as a whole word \\
+\emph{nyulwa (religious list)} & means 'be elected'; belongs to the political list \\
+\emph{bhunga} & orthography-specific: only Imvo writes <bh> \\
+\bottomrule\end{tabular}\label{tab:rejected}\end{table}
+\begin{table}[h]\centering\small\caption{Tokens removed from the remaining shared vocabulary in the sensitivity model: short tokens ($\leq$3 letters), tokens that precede a masked name in $\geq$50\% of training occurrences (separated prefixes), and tokens capitalised in $\geq$80\% of raw occurrences (residual names). Examples are the most frequent in each group.}
+\begin{tabular}{@{}lrp{0.55\linewidth}@{}}\toprule Reason & $n$ & Examples \\ \midrule
+capitalised & 45 & \emph{sprigg, yizani, iyeza, umbona, uhlala, pamla, mzimba, mhleli, bonisani, sakuba, rubusana, amazimba} \\
+prefix-before-name & 129 & \emph{wase, yase, lase, nase, ngolwesi, base, lika, yama, ngama, nama, sase, zase} \\
+short & 222 & \emph{ke, no, ka, ngu, to, ne, ngo, xa, ku, kwa, nge, apa} \\
+\bottomrule\end{tabular}\label{tab:excluded}\end{table}

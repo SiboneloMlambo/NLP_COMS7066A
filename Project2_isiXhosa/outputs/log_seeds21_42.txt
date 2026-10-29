@@ -1,43 +1,43 @@
-10:58:11 building corpus
-10:58:34 {'n_segments': {'IMVO': 6699, 'ISIG': 1509}, 'n_issues': {'IMVO': 211, 'ISIG': 38}, 'n_tokens_raw': {'IMVO': 1299755, 'ISIG': 288313}, 'n_probe_segments': 4690, 'n_probe_issues': 107, 'segments_by_year': {'IMVO': {1884: 227, 1885: 1397, 1886: 1564, 1887: 1606, 1888: 1905}, 'ISIG': {1884: 79, 1885: 467, 1886: 0, 1887: 483, 1888: 480}}}
-10:59:34 random_s21 L0 word F1=0.895 BA=0.881 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 58s
-11:02:38 random_s21 L0 char F1=0.942 BA=0.935 {'C': 30, 'ngram': (2, 4)} 184s
-11:02:58 random_s21 L0 nb F1=0.802 BA=0.861 {'alpha': 0.01, 'min_df': 2} 20s
-11:08:35 random_s21 L0 fasttext F1=0.835 BA=0.878 {'dim': 100, 'C': 1.0} 337s
-11:09:20 random_s21 L1 word F1=0.901 BA=0.896 {'C': 3, 'ngram': (1, 1), 'min_df': 5} 45s
-11:11:45 random_s21 L1 char F1=0.940 BA=0.936 {'C': 10, 'ngram': (2, 4)} 145s
-11:12:03 random_s21 L1 nb F1=0.870 BA=0.872 {'alpha': 0.03, 'min_df': 2} 18s
-11:16:11 random_s21 L1 fasttext F1=0.824 BA=0.844 {'dim': 100, 'C': 1.0} 248s
-11:16:57 random_s21 L2 word F1=0.901 BA=0.894 {'C': 3, 'ngram': (1, 1), 'min_df': 5} 46s
-11:19:06 random_s21 L2 char F1=0.936 BA=0.928 {'C': 30, 'ngram': (2, 5)} 130s
-11:19:24 random_s21 L2 nb F1=0.861 BA=0.858 {'alpha': 0.03, 'min_df': 2} 18s
-11:23:30 random_s21 L2 fasttext F1=0.806 BA=0.827 {'dim': 100, 'C': 1.0} 246s
-11:24:09 random_s21 L3 word F1=0.877 BA=0.866 {'C': 3, 'ngram': (1, 2), 'min_df': 5} 39s
-11:26:00 random_s21 L3 char F1=0.935 BA=0.929 {'C': 10, 'ngram': (2, 4)} 111s
-11:26:16 random_s21 L3 nb F1=0.815 BA=0.812 {'alpha': 0.03, 'min_df': 2} 16s
-11:29:50 random_s21 L3 fasttext F1=0.773 BA=0.795 {'dim': 100, 'C': 1.0} 214s
-11:30:10 random_s21 L4 word F1=0.857 BA=0.851 {'C': 3, 'ngram': (1, 2), 'min_df': 5} 20s
-11:30:48 random_s21 L4 char F1=0.825 BA=0.834 {'C': 3, 'ngram': (2, 5)} 37s
-11:30:58 random_s21 L4 nb F1=0.777 BA=0.819 {'alpha': 1.0, 'min_df': 2} 11s
-11:32:08 random_s21 L4 fasttext F1=0.740 BA=0.762 {'dim': 100, 'C': 1.0} 70s
-11:33:12 random_s42 L0 word F1=0.911 BA=0.889 {'C': 10, 'ngram': (1, 2), 'min_df': 5} 61s
-11:36:16 random_s42 L0 char F1=0.945 BA=0.931 {'C': 30, 'ngram': (2, 4)} 185s
-11:36:35 random_s42 L0 nb F1=0.844 BA=0.898 {'alpha': 0.01, 'min_df': 2} 19s
-11:41:46 random_s42 L0 fasttext F1=0.847 BA=0.872 {'dim': 100, 'C': 1.0} 310s
-11:42:31 random_s42 L1 word F1=0.888 BA=0.876 {'C': 3, 'ngram': (1, 1), 'min_df': 5} 45s
-11:44:55 random_s42 L1 char F1=0.925 BA=0.909 {'C': 30, 'ngram': (2, 4)} 144s
-11:45:13 random_s42 L1 nb F1=0.870 BA=0.853 {'alpha': 0.03, 'min_df': 2} 18s
-11:49:19 random_s42 L1 fasttext F1=0.825 BA=0.832 {'dim': 50, 'C': 1.0} 246s
-11:50:03 random_s42 L2 word F1=0.881 BA=0.863 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 44s
-11:52:03 random_s42 L2 char F1=0.905 BA=0.891 {'C': 10, 'ngram': (2, 4)} 120s
-11:52:21 random_s42 L2 nb F1=0.862 BA=0.849 {'alpha': 0.03, 'min_df': 2} 17s
-11:55:26 random_s42 L2 fasttext F1=0.795 BA=0.806 {'dim': 100, 'C': 1.0} 185s
-11:56:07 random_s42 L3 word F1=0.848 BA=0.826 {'C': 30, 'ngram': (1, 2), 'min_df': 5} 41s
-11:57:59 random_s42 L3 char F1=0.891 BA=0.878 {'C': 10, 'ngram': (2, 4)} 112s
-11:58:14 random_s42 L3 nb F1=0.833 BA=0.822 {'alpha': 0.03, 'min_df': 2} 15s
-12:00:20 random_s42 L3 fasttext F1=0.770 BA=0.786 {'dim': 100, 'C': 0.1} 126s
-12:00:38 random_s42 L4 word F1=0.819 BA=0.800 {'C': 30, 'ngram': (1, 2), 'min_df': 2} 18s
-12:01:13 random_s42 L4 char F1=0.813 BA=0.805 {'C': 3, 'ngram': (2, 5)} 35s
-12:01:23 random_s42 L4 nb F1=0.761 BA=0.785 {'alpha': 1.0, 'min_df': 2} 10s
-12:02:13 random_s42 L4 fasttext F1=0.743 BA=0.766 {'dim': 100, 'C': 0.1} 50s
-12:02:13 done (E1 only)
+20:31:53 building corpus
+20:32:13 {'n_segments': {'IMVO': 6699, 'ISIG': 1509}, 'n_issues': {'IMVO': 211, 'ISIG': 38}, 'n_tokens_raw': {'IMVO': 1299755, 'ISIG': 288313}, 'n_probe_segments': 4690, 'n_probe_issues': 107, 'segments_by_year': {'IMVO': {1884: 227, 1885: 1397, 1886: 1564, 1887: 1606, 1888: 1905}, 'ISIG': {1884: 79, 1885: 467, 1886: 0, 1887: 483, 1888: 480}}}
+20:33:15 random_s21 L0 word F1=0.895 BA=0.881 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 59s
+20:36:14 random_s21 L0 char F1=0.942 BA=0.935 {'C': 30, 'ngram': (2, 4)} 179s
+20:36:33 random_s21 L0 nb F1=0.802 BA=0.861 {'alpha': 0.01, 'min_df': 2} 19s
+20:42:22 random_s21 L0 fasttext F1=0.843 BA=0.881 {'dim': 100, 'C': 1.0} 349s
+20:43:06 random_s21 L1 word F1=0.901 BA=0.896 {'C': 3, 'ngram': (1, 1), 'min_df': 5} 45s
+20:45:29 random_s21 L1 char F1=0.940 BA=0.936 {'C': 10, 'ngram': (2, 4)} 143s
+20:45:46 random_s21 L1 nb F1=0.870 BA=0.872 {'alpha': 0.03, 'min_df': 2} 17s
+20:49:49 random_s21 L1 fasttext F1=0.808 BA=0.833 {'dim': 100, 'C': 0.1} 242s
+20:50:30 random_s21 L2 word F1=0.901 BA=0.894 {'C': 3, 'ngram': (1, 1), 'min_df': 5} 41s
+20:52:28 random_s21 L2 char F1=0.936 BA=0.928 {'C': 30, 'ngram': (2, 5)} 118s
+20:52:47 random_s21 L2 nb F1=0.861 BA=0.858 {'alpha': 0.03, 'min_df': 2} 18s
+20:56:25 random_s21 L2 fasttext F1=0.814 BA=0.836 {'dim': 100, 'C': 0.1} 219s
+20:57:02 random_s21 L3 word F1=0.877 BA=0.866 {'C': 3, 'ngram': (1, 2), 'min_df': 5} 37s
+20:58:53 random_s21 L3 char F1=0.935 BA=0.929 {'C': 10, 'ngram': (2, 4)} 111s
+20:59:11 random_s21 L3 nb F1=0.815 BA=0.812 {'alpha': 0.03, 'min_df': 2} 17s
+21:02:28 random_s21 L3 fasttext F1=0.780 BA=0.807 {'dim': 100, 'C': 1.0} 197s
+21:02:48 random_s21 L4 word F1=0.857 BA=0.851 {'C': 3, 'ngram': (1, 2), 'min_df': 5} 20s
+21:03:23 random_s21 L4 char F1=0.825 BA=0.834 {'C': 3, 'ngram': (2, 5)} 35s
+21:03:32 random_s21 L4 nb F1=0.777 BA=0.819 {'alpha': 1.0, 'min_df': 2} 10s
+21:04:42 random_s21 L4 fasttext F1=0.742 BA=0.768 {'dim': 100, 'C': 1.0} 69s
+21:05:43 random_s42 L0 word F1=0.911 BA=0.889 {'C': 10, 'ngram': (1, 2), 'min_df': 5} 59s
+21:09:02 random_s42 L0 char F1=0.945 BA=0.931 {'C': 30, 'ngram': (2, 4)} 199s
+21:09:21 random_s42 L0 nb F1=0.844 BA=0.898 {'alpha': 0.01, 'min_df': 2} 20s
+21:14:47 random_s42 L0 fasttext F1=0.846 BA=0.864 {'dim': 100, 'C': 1.0} 325s
+21:15:33 random_s42 L1 word F1=0.888 BA=0.876 {'C': 3, 'ngram': (1, 1), 'min_df': 5} 47s
+21:18:02 random_s42 L1 char F1=0.925 BA=0.909 {'C': 30, 'ngram': (2, 4)} 149s
+21:18:18 random_s42 L1 nb F1=0.870 BA=0.853 {'alpha': 0.03, 'min_df': 2} 16s
+21:22:22 random_s42 L1 fasttext F1=0.822 BA=0.834 {'dim': 50, 'C': 1.0} 243s
+21:23:06 random_s42 L2 word F1=0.881 BA=0.863 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 44s
+21:25:03 random_s42 L2 char F1=0.905 BA=0.891 {'C': 10, 'ngram': (2, 4)} 117s
+21:25:18 random_s42 L2 nb F1=0.862 BA=0.849 {'alpha': 0.03, 'min_df': 2} 15s
+21:28:51 random_s42 L2 fasttext F1=0.796 BA=0.805 {'dim': 100, 'C': 0.1} 213s
+21:29:27 random_s42 L3 word F1=0.848 BA=0.826 {'C': 30, 'ngram': (1, 2), 'min_df': 5} 36s
+21:31:03 random_s42 L3 char F1=0.891 BA=0.878 {'C': 10, 'ngram': (2, 4)} 96s
+21:31:17 random_s42 L3 nb F1=0.833 BA=0.822 {'alpha': 0.03, 'min_df': 2} 15s
+21:34:14 random_s42 L3 fasttext F1=0.764 BA=0.776 {'dim': 100, 'C': 1.0} 177s
+21:34:32 random_s42 L4 word F1=0.819 BA=0.800 {'C': 30, 'ngram': (1, 2), 'min_df': 2} 18s
+21:35:07 random_s42 L4 char F1=0.813 BA=0.805 {'C': 3, 'ngram': (2, 5)} 35s
+21:35:16 random_s42 L4 nb F1=0.761 BA=0.785 {'alpha': 1.0, 'min_df': 2} 9s
+21:36:24 random_s42 L4 fasttext F1=0.751 BA=0.774 {'dim': 100, 'C': 1.0} 68s
+21:36:24 done (E1 only)
