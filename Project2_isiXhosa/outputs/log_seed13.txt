@@ -1,50 +1,50 @@
-20:31:53 building corpus
-20:32:13 {'n_segments': {'IMVO': 6699, 'ISIG': 1509}, 'n_issues': {'IMVO': 211, 'ISIG': 38}, 'n_tokens_raw': {'IMVO': 1299755, 'ISIG': 288313}, 'n_probe_segments': 4690, 'n_probe_issues': 107, 'segments_by_year': {'IMVO': {1884: 227, 1885: 1397, 1886: 1564, 1887: 1606, 1888: 1905}, 'ISIG': {1884: 79, 1885: 467, 1886: 0, 1887: 483, 1888: 480}}}
-20:33:14 random_s13 L0 word F1=0.899 BA=0.892 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 58s
-20:36:13 random_s13 L0 char F1=0.926 BA=0.922 {'C': 30, 'ngram': (2, 4)} 179s
-20:36:32 random_s13 L0 nb F1=0.789 BA=0.867 {'alpha': 0.01, 'min_df': 2} 19s
-20:42:07 random_s13 L0 fasttext F1=0.796 BA=0.853 {'dim': 100, 'C': 1.0} 336s
-20:42:54 random_s13 L1 word F1=0.883 BA=0.880 {'C': 3, 'ngram': (1, 1), 'min_df': 2} 46s
-20:45:12 random_s13 L1 char F1=0.916 BA=0.906 {'C': 30, 'ngram': (2, 4)} 138s
-20:45:31 random_s13 L1 nb F1=0.833 BA=0.858 {'alpha': 0.1, 'min_df': 2} 19s
-20:49:35 random_s13 L1 fasttext F1=0.791 BA=0.822 {'dim': 100, 'C': 0.1} 244s
-20:50:16 random_s13 L2 word F1=0.875 BA=0.857 {'C': 30, 'ngram': (1, 1), 'min_df': 2} 41s
-20:52:18 random_s13 L2 char F1=0.906 BA=0.897 {'C': 30, 'ngram': (2, 4)} 122s
-20:52:35 random_s13 L2 nb F1=0.834 BA=0.854 {'alpha': 0.1, 'min_df': 2} 17s
-20:56:23 random_s13 L2 fasttext F1=0.786 BA=0.810 {'dim': 100, 'C': 1.0} 228s
-20:57:01 random_s13 L3 word F1=0.852 BA=0.847 {'C': 3, 'ngram': (1, 1), 'min_df': 2} 38s
-20:58:52 random_s13 L3 char F1=0.892 BA=0.880 {'C': 30, 'ngram': (2, 5)} 111s
-20:59:09 random_s13 L3 nb F1=0.809 BA=0.832 {'alpha': 0.1, 'min_df': 2} 17s
-21:02:26 random_s13 L3 fasttext F1=0.731 BA=0.765 {'dim': 100, 'C': 0.1} 197s
-21:02:45 random_s13 L4 word F1=0.840 BA=0.837 {'C': 3, 'ngram': (1, 2), 'min_df': 5} 19s
-21:03:20 random_s13 L4 char F1=0.811 BA=0.814 {'C': 3, 'ngram': (2, 5)} 35s
-21:03:30 random_s13 L4 nb F1=0.762 BA=0.800 {'alpha': 1.0, 'min_df': 2} 10s
-21:04:40 random_s13 L4 fasttext F1=0.717 BA=0.763 {'dim': 100, 'C': 0.1} 70s
-21:05:44 nodedup_s13 L0 word F1=0.902 BA=0.896 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 62s
-21:09:03 nodedup_s13 L0 char F1=0.928 BA=0.924 {'C': 30, 'ngram': (2, 4)} 200s
-21:09:50 nodedup_s13 L1 word F1=0.890 BA=0.887 {'C': 3, 'ngram': (1, 1), 'min_df': 2} 46s
-21:12:14 nodedup_s13 L1 char F1=0.920 BA=0.910 {'C': 30, 'ngram': (2, 4)} 145s
-21:12:59 temporal_1888 L1 word F1=0.864 BA=0.869 {'C': 10, 'ngram': (1, 1), 'min_df': 5} 42s
-21:14:58 temporal_1888 L1 char F1=0.896 BA=0.889 {'C': 30, 'ngram': (2, 5)} 119s
-21:15:17 temporal_1888 L4 word F1=0.787 BA=0.803 {'C': 3, 'ngram': (1, 2), 'min_df': 2} 19s
-21:15:49 temporal_1888 L4 char F1=0.745 BA=0.777 {'C': 3, 'ngram': (2, 5)} 32s
-21:15:58 word[style_top100] F1=0.718 BA=0.749
-21:16:07 word[content_noTop100] F1=0.802 BA=0.808
-21:16:16 word[content_clean] F1=0.750 BA=0.779
-21:16:30 surface_lr F1=0.605
-21:16:54 surface_gb F1=0.715
-21:17:02 ortho_lr F1=0.753
-21:17:15 ortho_gb F1=0.759
-21:17:22 noncontent_lr F1=0.800
-21:17:44 noncontent_gb F1=0.831
-21:18:36 matched {'n_pairs': 134, 'caliper': 1.8290358499840673, 'mean_abs_smd_before': 0.28827477853894895, 'mean_abs_smd_after': 0.08250088089645137, 'max_abs_smd_after': 0.2923574275101029, 'n_features_abs_smd_after_gt_0_25': 1, 'n_issues_matched': 35}
-21:18:37 inject 0.0 [0.183, 0.157, 0.246, 0.261]
-21:18:38 inject 0.02 [0.194, 0.172, 0.257, 0.265]
-21:18:39 inject 0.05 [0.198, 0.175, 0.269, 0.295]
-21:18:39 inject 0.1 [0.201, 0.213, 0.269, 0.28]
-21:18:40 inject 0.2 [0.243, 0.254, 0.299, 0.321]
-21:18:41 inject 0.4 [0.284, 0.377, 0.302, 0.317]
-21:18:42 probe {'IMVO Nov 1884-88': {'mean_p_imvo': 0.7775472570454399, 'ci': [0.7463300903785502, 0.8063842604626318], 'frac_segments_imvo': 0.8772919605077574, 'n_issues': 31, 'mean_in_vocab_tokens': 50.905597602193026}, 'ISIG 1876-80 (pre-Jabavu)': {'mean_p_imvo': 0.5533807697035822, 'ci': [0.5407048419152253, 0.5664363264992138], 'frac_segments_imvo': 0.5824081981212639, 'n_issues': 51, 'mean_in_vocab_tokens': 60.676675423858654}, 'ISIG 1881-Oct 1884 (Jabavu)': {'mean_p_imvo': 0.6048800893618945, 'ci': [0.5913876830424379, 0.6185349540302784], 'frac_segments_imvo': 0.6626916524701874, 'n_issues': 56, 'mean_in_vocab_tokens': 56.27502866412822}, 'ISIG Nov 1884-88 (post-Jabavu)': {'mean_p_imvo': 0.33828506126652286, 'ci': [0.28433434097685406, 0.397852706487806], 'frac_segments_imvo': 0.26119402985074625, 'n_issues': 7, 'mean_in_vocab_tokens': 56.481275483662266}, 'diff_jabavu_minus_post': [0.26659502809537167, 0.20791219668778071, 0.3224800924420931], 'diff_jabavu_minus_pre': [0.05149931965831234, 0.03286107376787574, 0.07075087120122286]}
-21:19:11 lexicon year-controlled {'political_per1k': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': 5.909833596944898, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 4}, 'religious_per1k': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': -2.2543951809078844, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 0}, 'pol_share': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': 0.22584466308399184, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 4}}
-21:19:18 lexicon {'IMVO Nov 1884-88': {'political_per1k': [13.969374861738487, 13.237542415591006, 14.698509259509288], 'religious_per1k': [3.232528767724694, 3.010536954579741, 3.468474678817441], 'pol_share': [0.796949538674284, 0.7821023764899395, 0.8117070520749219], 'n_issues': 211}, 'ISIG 1876-80 (pre-Jabavu)': {'political_per1k': [8.929988241756694, 8.12477940426457, 9.804422332731466], 'religious_per1k': [8.226023432765162, 7.0823098211500115, 9.401979966561406], 'pol_share': [0.536362951238468, 0.4924067509886293, 0.5805134153103596], 'n_issues': 51}, 'ISIG 1881-Oct 1884 (Jabavu)': {'political_per1k': [10.03973622268738, 8.996902802988382, 11.11600351877902], 'religious_per1k': [4.762591801509287, 4.220291777289546, 5.342404538068698], 'pol_share': [0.6660949351307057, 0.6313828503071366, 0.699806611931527], 'n_issues': 56}, 'ISIG Nov 1884-88 (post-Jabavu)': {'political_per1k': [7.377080754565909, 6.220992843337591, 8.732835107368036], 'religious_per1k': [5.1392059434641215, 4.323284319362838, 5.980074607126707], 'pol_share': [0.5858171408575906, 0.5389434802692263, 0.6339669696925766], 'n_issues': 38}}
-21:19:18 done
+06:41:11 building corpus
+06:41:37 {'n_segments': {'IMVO': 6699, 'ISIG': 1509}, 'n_issues': {'IMVO': 211, 'ISIG': 38}, 'n_tokens_raw': {'IMVO': 1299755, 'ISIG': 288313}, 'n_probe_segments': 4690, 'n_probe_issues': 107, 'segments_by_year': {'IMVO': {1884: 227, 1885: 1397, 1886: 1564, 1887: 1606, 1888: 1905}, 'ISIG': {1884: 79, 1885: 467, 1886: 0, 1887: 483, 1888: 480}}}
+06:42:33 random_s13 L0 word F1=0.899 BA=0.892 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 54s
+06:45:22 random_s13 L0 char F1=0.926 BA=0.922 {'C': 30, 'ngram': (2, 4)} 169s
+06:45:42 random_s13 L0 nb F1=0.789 BA=0.867 {'alpha': 0.01, 'min_df': 2} 20s
+06:51:05 random_s13 L0 fasttext F1=0.796 BA=0.853 {'dim': 100, 'C': 1.0} 323s
+06:51:50 random_s13 L1 word F1=0.883 BA=0.880 {'C': 3, 'ngram': (1, 1), 'min_df': 2} 45s
+06:54:02 random_s13 L1 char F1=0.916 BA=0.906 {'C': 30, 'ngram': (2, 4)} 132s
+06:54:18 random_s13 L1 nb F1=0.833 BA=0.858 {'alpha': 0.1, 'min_df': 2} 16s
+06:58:12 random_s13 L1 fasttext F1=0.791 BA=0.822 {'dim': 100, 'C': 0.1} 235s
+06:58:53 random_s13 L2 word F1=0.875 BA=0.857 {'C': 30, 'ngram': (1, 1), 'min_df': 2} 41s
+07:00:50 random_s13 L2 char F1=0.906 BA=0.897 {'C': 30, 'ngram': (2, 4)} 117s
+07:01:07 random_s13 L2 nb F1=0.834 BA=0.854 {'alpha': 0.1, 'min_df': 2} 17s
+07:04:49 random_s13 L2 fasttext F1=0.786 BA=0.810 {'dim': 100, 'C': 1.0} 222s
+07:05:26 random_s13 L3 word F1=0.852 BA=0.847 {'C': 3, 'ngram': (1, 1), 'min_df': 2} 36s
+07:07:10 random_s13 L3 char F1=0.892 BA=0.880 {'C': 30, 'ngram': (2, 5)} 104s
+07:07:25 random_s13 L3 nb F1=0.809 BA=0.832 {'alpha': 0.1, 'min_df': 2} 16s
+07:10:31 random_s13 L3 fasttext F1=0.731 BA=0.765 {'dim': 100, 'C': 0.1} 186s
+07:10:52 random_s13 L4 word F1=0.840 BA=0.837 {'C': 3, 'ngram': (1, 2), 'min_df': 5} 20s
+07:11:27 random_s13 L4 char F1=0.811 BA=0.814 {'C': 3, 'ngram': (2, 5)} 35s
+07:11:37 random_s13 L4 nb F1=0.762 BA=0.800 {'alpha': 1.0, 'min_df': 2} 10s
+07:12:46 random_s13 L4 fasttext F1=0.717 BA=0.763 {'dim': 100, 'C': 0.1} 70s
+07:13:48 nodedup_s13 L0 word F1=0.902 BA=0.896 {'C': 10, 'ngram': (1, 1), 'min_df': 2} 60s
+07:17:05 nodedup_s13 L0 char F1=0.928 BA=0.924 {'C': 30, 'ngram': (2, 4)} 197s
+07:17:51 nodedup_s13 L1 word F1=0.890 BA=0.887 {'C': 3, 'ngram': (1, 1), 'min_df': 2} 46s
+07:20:11 nodedup_s13 L1 char F1=0.920 BA=0.910 {'C': 30, 'ngram': (2, 4)} 140s
+07:20:52 temporal_1888 L1 word F1=0.864 BA=0.869 {'C': 10, 'ngram': (1, 1), 'min_df': 5} 40s
+07:22:52 temporal_1888 L1 char F1=0.896 BA=0.889 {'C': 30, 'ngram': (2, 5)} 120s
+07:23:10 temporal_1888 L4 word F1=0.787 BA=0.803 {'C': 3, 'ngram': (1, 2), 'min_df': 2} 18s
+07:23:42 temporal_1888 L4 char F1=0.745 BA=0.777 {'C': 3, 'ngram': (2, 5)} 32s
+07:23:52 word[style_top100] F1=0.718 BA=0.749
+07:23:59 word[content_noTop100] F1=0.802 BA=0.808
+07:24:08 word[content_clean] F1=0.750 BA=0.779
+07:24:23 surface_lr F1=0.605
+07:24:40 surface_gb F1=0.715
+07:24:48 ortho_lr F1=0.753
+07:24:56 ortho_gb F1=0.759
+07:25:04 noncontent_lr F1=0.800
+07:25:21 noncontent_gb F1=0.831
+07:26:17 matched {'n_pairs': 134, 'caliper': 1.8290358499840673, 'mean_abs_smd_before': 0.28827477853894895, 'mean_abs_smd_after': 0.08250088089645137, 'max_abs_smd_after': 0.2923574275101029, 'n_features_abs_smd_after_gt_0_25': 1, 'n_issues_matched': 35}
+07:26:18 inject 0.0 [0.183, 0.157, 0.246, 0.261]
+07:26:19 inject 0.02 [0.194, 0.172, 0.257, 0.265]
+07:26:20 inject 0.05 [0.198, 0.175, 0.269, 0.295]
+07:26:20 inject 0.1 [0.201, 0.213, 0.269, 0.28]
+07:26:21 inject 0.2 [0.243, 0.254, 0.299, 0.321]
+07:26:22 inject 0.4 [0.284, 0.377, 0.302, 0.317]
+07:26:23 probe {'IMVO Nov 1884-88': {'mean_p_imvo': 0.7775472570454399, 'ci': [0.7463300903785502, 0.8063842604626318], 'frac_segments_imvo': 0.8772919605077574, 'n_issues': 31, 'mean_in_vocab_tokens': 50.905597602193026}, 'ISIG 1876-80 (pre-Jabavu)': {'mean_p_imvo': 0.5533807697035822, 'ci': [0.5407048419152253, 0.5664363264992138], 'frac_segments_imvo': 0.5824081981212639, 'n_issues': 51, 'mean_in_vocab_tokens': 60.676675423858654}, 'ISIG 1881-Oct 1884 (Jabavu)': {'mean_p_imvo': 0.6048800893618945, 'ci': [0.5913876830424379, 0.6185349540302784], 'frac_segments_imvo': 0.6626916524701874, 'n_issues': 56, 'mean_in_vocab_tokens': 56.27502866412822}, 'ISIG Nov 1884-88 (post-Jabavu)': {'mean_p_imvo': 0.33828506126652286, 'ci': [0.28433434097685406, 0.397852706487806], 'frac_segments_imvo': 0.26119402985074625, 'n_issues': 7, 'mean_in_vocab_tokens': 56.481275483662266}, 'diff_jabavu_minus_post': [0.26659502809537167, 0.20791219668778071, 0.3224800924420931], 'diff_jabavu_minus_pre': [0.05149931965831234, 0.03286107376787574, 0.07075087120122286]}
+07:27:19 lexicon year-controlled {'political_per1k': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': 5.909833596944898, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 4}, 'religious_per1k': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': -2.2543951809078844, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 0}, 'pol_share': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': 0.22584466308399184, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 4}, 'political_strict_per1k': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': 4.780564728729196, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 4}, 'religious_strict_per1k': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': -1.990194807053388, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 0}, 'pol_share_strict': {'years': [1884, 1885, 1887, 1888], 'mean_within_year_diff': 0.2643636990111642, 'perm_p_within_year': 0.0002, 'n_years_imvo_higher': 4}}
+07:27:25 lexicon {'IMVO Nov 1884-88': {'political_per1k': [13.969374861738487, 13.237542415591006, 14.698509259509288], 'religious_per1k': [3.232528767724694, 3.010536954579741, 3.468474678817441], 'pol_share': [0.796949538674284, 0.7821023764899395, 0.8117070520749219], 'n_issues': 211}, 'ISIG 1876-80 (pre-Jabavu)': {'political_per1k': [8.929988241756694, 8.12477940426457, 9.804422332731466], 'religious_per1k': [8.226023432765162, 7.0823098211500115, 9.401979966561406], 'pol_share': [0.536362951238468, 0.4924067509886293, 0.5805134153103596], 'n_issues': 51}, 'ISIG 1881-Oct 1884 (Jabavu)': {'political_per1k': [10.03973622268738, 8.996902802988382, 11.11600351877902], 'religious_per1k': [4.762591801509287, 4.220291777289546, 5.342404538068698], 'pol_share': [0.6660949351307057, 0.6313828503071366, 0.699806611931527], 'n_issues': 56}, 'ISIG Nov 1884-88 (post-Jabavu)': {'political_per1k': [7.377080754565909, 6.220992843337591, 8.732835107368036], 'religious_per1k': [5.1392059434641215, 4.323284319362838, 5.980074607126707], 'pol_share': [0.5858171408575906, 0.5389434802692263, 0.6339669696925766], 'n_issues': 38}}
+07:27:25 done

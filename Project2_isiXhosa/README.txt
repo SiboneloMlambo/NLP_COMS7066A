@@ -44,7 +44,11 @@ Experiments
  E7  out-of-sample probe: Isigidimi 1876-Oct 1884 (pre-Jabavu and Jabavu
      editorial eras) scored by the content classifier
  E8  political / religious lexicon rates per issue and per era, a
-     year-controlled comparison (common years only) and a concordance audit
+     year-controlled comparison (common years only), a strict version
+     without ambiguous patterns, and a concordance audit
+ Exploratory follow-ups (added after inspecting results / review): the
+ fragment/name sensitivity model, matched-set intervals and balance
+ diagnostics, and the year-controlled and strict lexicon comparisons.
 
 Hyper-parameters are chosen on the validation split by macro-F1; the test
 split is used once. Test CIs: cluster bootstrap over issues (1000 resamples).
@@ -52,8 +56,8 @@ split is used once. Test CIs: cluster bootstrap over issues (1000 resamples).
 ------------------------------------------------------------------------
 2. Setup
 ------------------------------------------------------------------------
-Python 3.10+ (results produced with 3.13 and the exact versions pinned in
-requirements.txt).  CPU only; no GPU or internet needed.
+Python 3.12 or newer (the pinned NumPy and SciPy require 3.12); results were
+produced with Python 3.13 and the exact versions in requirements.txt.  CPU only; no GPU or internet needed.
 Determinism: all splits/models are seeded; fastText is trained single-threaded
 and run_experiments.py fixes PYTHONHASHSEED=0 (it re-launches itself if
 needed), so reruns with the pinned versions reproduce the reported numbers.
@@ -124,6 +128,9 @@ figures/                           figures used in the report
 matched_pairs.csv, matching_balance.csv  E4 pairs and per-feature balance
 lexicon_by_year_controlled.csv     E8 comparison restricted to common years
 lexicon_audit.csv, lexicon_rejected.csv  lexicon concordance audit
+lexicon_annotation_sheet.csv       blank sheet (15 random matches per pattern
+                                   per paper) for semantic validation by an
+                                   isiXhosa reader: fill in the label column
 excluded_fragments_names.csv       tokens removed in the sensitivity model
 log_*.txt                          run logs
 (make_figures.py also copies the figures and tables used by the LaTeX

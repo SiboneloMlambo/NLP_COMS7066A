@@ -25,7 +25,7 @@ from data import (build_corpus, issue_split, temporal_split, duplicate_mask,  # 
                   level2, level4_tokens)
 from features import (surface_features, SURFACE_NAMES, lexicon_counts,  # noqa: E402
                       inject_noise, ortho_features, ORTHO_NAMES, lexicon_hits,
-                      REJECTED)
+                      REJECTED, AMBIGUOUS)
 from models import tune, metrics, cluster_bootstrap, word_lr  # noqa: E402
 from sklearn.metrics import f1_score  # noqa: E402
 
@@ -320,15 +320,27 @@ def main():
     msel = np.array([x for k in sel for x in pairs[k]])
     level_models = keep["fitted"]
     pair_arr = msel.reshape(-1, 2)          # columns: Isigidimi idx, Imvo idx
+    # Issue-level bootstrap for the matched subset: the matched segments are
+    # held fixed, and whole issues are resampled within each newspaper
+    # (pairs from the same issue are not independent).
+    def issue_groups(idx):
+        g = collections.defaultdict(list)
+        for k in idx:
+            g[te.issue.values[k]].append(k)
+        return list(g.values())
+    G_isig, G_imvo = issue_groups(pair_arr[:, 0]), issue_groups(pair_arr[:, 1])
     rng_m = np.random.default_rng(0)
-    boot_pairs = [rng_m.integers(0, len(pair_arr), len(pair_arr)) for _ in range(1000)]
+    boot_issues = [(rng_m.integers(0, len(G_isig), len(G_isig)),
+                    rng_m.integers(0, len(G_imvo), len(G_imvo))) for _ in range(1000)]
+    stats["matching_issues"] = dict(isig=len(G_isig), imvo=len(G_imvo))
 
     def matched_row(name, p_full, full_ba):
-        """BA on matched pairs + 95% CI from resampling pairs."""
+        """BA on matched segments + 95% CI from resampling issues."""
         p_m = p_full[msel]
         bs = []
-        for idx in boot_pairs:
-            take = pair_arr[idx].ravel()
+        for a_i, b_i in boot_issues:
+            take = np.array([k for i in a_i for k in G_isig[i]] +
+                            [k for j in b_i for k in G_imvo[j]])
             bs.append(metrics(yte[take], p_full[take])["bal_acc"])
         lo, hi = np.percentile(bs, [2.5, 97.5])
         return dict(model=name, full_bal_acc=full_ba, **metrics(yte[msel], p_m),
@@ -486,13 +498,15 @@ def main():
     rows = []
     for r_ in seg_all.itertuples():
         toks = level2(r_.raw).lower().split()
+        strict = {f"{k}_strict": v for k, v in lexicon_counts(toks, drop=AMBIGUOUS).items()}
         rows.append(dict(issue=r_.issue, paper=r_.paper, year=r_.year,
-                         month=r_.month, n=len(toks), **lexicon_counts(toks)))
+                         month=r_.month, n=len(toks), **lexicon_counts(toks), **strict))
     lx = pd.DataFrame(rows).groupby(["issue", "paper", "year", "month"], as_index=False).sum()
     lx["group"] = np.where(lx.paper == "IMVO", "IMVO Nov 1884-88", lx.issue.map(era))
-    for k in ("political", "religious"):
+    for k in ("political", "religious", "political_strict", "religious_strict"):
         lx[f"{k}_per1k"] = 1000 * lx[k] / lx.n
     lx["pol_share"] = lx.political / (lx.political + lx.religious)
+    lx["pol_share_strict"] = lx.political_strict / (lx.political_strict + lx.religious_strict)
     lx.to_csv(f"{args.out}/lexicon_by_issue.csv", index=False)
     lex_summary = {}
     for g, d in lx.groupby("group"):
@@ -524,7 +538,8 @@ def main():
     years = sorted(set(both[both.paper == "IMVO"].year) & set(both[both.paper == "ISIG"].year))
     both = both[both.year.isin(years)]
     yrows = []
-    for k in ("political_per1k", "religious_per1k", "pol_share"):
+    for k in ("political_per1k", "religious_per1k", "pol_share",
+              "political_strict_per1k", "religious_strict_per1k", "pol_share_strict"):
         diffs_y = []
         for yv in years:
             d = both[both.year == yv]
@@ -561,18 +576,33 @@ def main():
         toks = level2(r_.raw).lower().split()
         for i, w in enumerate(toks):
             for cat, pat, ww in lexicon_hits([w]):
-                hits[(cat, pat)].append((r_.paper, w, " ".join(toks[max(0, i - 5):i + 6])))
+                hits[(cat, pat)].append((r_.paper, w, " ".join(toks[max(0, i - 5):i + 6]), r_.issue))
     arows = []
     rng_a = np.random.default_rng(0)
     for (cat, pat), hs in sorted(hits.items()):
-        types = collections.Counter(w for _, w, _ in hs).most_common(5)
+        types = collections.Counter(h[1] for h in hs).most_common(5)
         ex = [hs[j][2] for j in rng_a.choice(len(hs), size=min(2, len(hs)), replace=False)]
         arows.append(dict(category=cat, pattern=pat,
-                          n_imvo=sum(p_ == "IMVO" for p_, _, _ in hs),
-                          n_isig=sum(p_ == "ISIG" for p_, _, _ in hs),
+                          n_imvo=sum(h[0] == "IMVO" for h in hs),
+                          n_isig=sum(h[0] == "ISIG" for h in hs),
+                          ambiguous=AMBIGUOUS.get(pat, ""),
                           top_types="; ".join(f"{w} ({c})" for w, c in types),
                           example_1=ex[0] if ex else "", example_2=ex[1] if len(ex) > 1 else ""))
     pd.DataFrame(arows).to_csv(f"{args.out}/lexicon_audit.csv", index=False)
+    # Blank annotation sheet for semantic validation by an isiXhosa reader:
+    # up to 15 random matches per pattern per newspaper, label left empty
+    # (correct / incorrect / uncertain).
+    srows = []
+    rng_s = np.random.default_rng(1)
+    for (cat, pat), hs in sorted(hits.items()):
+        for paper in ("IMVO", "ISIG"):
+            hp_ = [h for h in hs if h[0] == paper]
+            for j in rng_s.choice(len(hp_), size=min(15, len(hp_)), replace=False):
+                srows.append(dict(category=cat, pattern=pat, paper=paper, issue=hp_[j][3],
+                                  matched_word=hp_[j][1], context=hp_[j][2],
+                                  label_correct_incorrect_uncertain="", sense_or_note=""))
+    pd.DataFrame(srows).sample(frac=1, random_state=0).to_csv(
+        f"{args.out}/lexicon_annotation_sheet.csv", index=False)
     pd.DataFrame([dict(stem=k, reason=v) for k, v in REJECTED.items()]).to_csv(
         f"{args.out}/lexicon_rejected.csv", index=False)
     log("lexicon", lex_summary)

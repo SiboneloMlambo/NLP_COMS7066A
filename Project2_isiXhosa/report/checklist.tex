@@ -15,7 +15,7 @@
 \item {\bf Limitations}
     \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The Limitations paragraph, Methods and Supplement note the small number of Isigidimi issues (38; wide confidence intervals), the missing 1886 Isigidimi volume, the hand-built lexicons (drafted by a non-first-language speaker, not reviewed by a first-language speaker, and imposing a modern politics/religion split), the confounding of publication frequency and genre with source, the loose separation of style and topic by word frequency, matching that reduces only measured imbalance, transcription features that are proxies rather than measured OCR error rates, and the absence of pretrained encoders. The Discussion explains why the out-of-sample classifier probe cannot be read as an editor effect.
+    \item[] Justification: The Limitations paragraph, Methods and Supplement note the small number of Isigidimi issues (38; wide confidence intervals), the missing 1886 Isigidimi volume, the hand-built lexicons (drafted by a non-first-language speaker, not reviewed by a first-language speaker, without estimated precision, with several patterns that also carry non-political or non-religious senses, and imposing a modern politics/religion split), the confounding of publication frequency and genre with source, the loose separation of style and topic by word frequency, matching that reduces only measured imbalance, transcription features that are proxies rather than measured OCR error rates, and the absence of pretrained encoders. The Discussion explains why the out-of-sample classifier probe cannot be read as an editor effect, and the follow-up analyses added after inspecting results are labelled exploratory.
 
 \item {\bf Theory Assumptions and Proofs}
     \item[] Question: For each theoretical result, does the paper provide the full set of assumptions and a complete (and correct) proof?
@@ -40,7 +40,7 @@
 \item {\bf Experiment Statistical Significance}
     \item[] Question: Does the paper report error bars suitably and correctly defined or other appropriate information about the statistical significance of the experiments?
     \item[] Answer: \answerYes{}
-    \item[] Justification: All test scores carry 95\% confidence intervals from a cluster bootstrap that resamples whole issues (1{,}000 resamples), plus the standard deviation over three independent issue splits. Lexicon differences use issue-level bootstrap intervals and a permutation test.
+    \item[] Justification: Test scores carry 95\% confidence intervals from a cluster bootstrap that resamples whole issues (1{,}000 resamples); for the matched subset, the matched segments are held fixed and issues are resampled within each newspaper. The standard deviation over three independent issue splits is also reported. Lexicon differences use issue-level bootstrap intervals and permutation tests (within year for the year-controlled comparison).
 
 \item {\bf Experiments Compute Resources}
     \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?

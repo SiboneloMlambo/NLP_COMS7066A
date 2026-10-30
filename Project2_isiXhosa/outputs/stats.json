@@ -52,6 +52,10 @@
       "capitalised": 45
     }
   },
+  "matching_issues": {
+    "isig": 7,
+    "imvo": 28
+  },
   "matching": {
     "n_pairs": 134,
     "caliper": 1.8290358499840673,
@@ -331,6 +335,39 @@
         1888
       ],
       "mean_within_year_diff": 0.22584466308399184,
+      "perm_p_within_year": 0.0002,
+      "n_years_imvo_higher": 4
+    },
+    "political_strict_per1k": {
+      "years": [
+        1884,
+        1885,
+        1887,
+        1888
+      ],
+      "mean_within_year_diff": 4.780564728729196,
+      "perm_p_within_year": 0.0002,
+      "n_years_imvo_higher": 4
+    },
+    "religious_strict_per1k": {
+      "years": [
+        1884,
+        1885,
+        1887,
+        1888
+      ],
+      "mean_within_year_diff": -1.990194807053388,
+      "perm_p_within_year": 0.0002,
+      "n_years_imvo_higher": 0
+    },
+    "pol_share_strict": {
+      "years": [
+        1884,
+        1885,
+        1887,
+        1888
+      ],
+      "mean_within_year_diff": 0.2643636990111642,
       "perm_p_within_year": 0.0002,
       "n_years_imvo_higher": 4
     }

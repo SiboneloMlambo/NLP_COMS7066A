@@ -27,8 +27,8 @@ plt.rcParams.update({
     "grid.linewidth": 0.6, "axes.axisbelow": True, "lines.linewidth": 1.6,
     "savefig.dpi": 300, "savefig.bbox": "tight", "pdf.fonttype": 42})
 
-MODEL_STYLE = {"word": (BLUE, "o", "word TF-IDF + LR"),
-               "char": (ORANGE, "s", "char 2-5-gram + LR"),
+MODEL_STYLE = {"word": (BLUE, "o", "word 1/1-2-gram + LR"),
+               "char": (ORANGE, "s", "char 2-4/2-5-gram + LR"),
                "nb": (AQUA, "^", "Complement NB"),
                "fasttext": (VIOLET, "D", "fastText (own) + LR")}
 LEVEL_LABEL = {"L0": "L0\nfull text", "L1": "L1\nisiXhosa", "L2": "L2\n−self-ref.",
@@ -310,7 +310,7 @@ def supp_tables_extra(out):
              "surface_lr": "Transcription (LR)", "surface_gb": "Transcription (GB)",
              "ortho_lr": "Orthography (LR)", "ortho_gb": "Orthography (GB)",
              "noncontent_lr": "All non-content (LR)", "noncontent_gb": "All non-content (GB)"}
-    L.append(r"\begin{table}[h]\centering\small\caption{Matched evaluation (seed 13): balanced accuracy on all test segments and on the matched pairs, with a 95\% CI from resampling pairs (1{,}000 resamples).}")
+    L.append(r"\begin{table}[h]\centering\small\caption{Matched evaluation (seed 13): balanced accuracy on all test segments and on the matched pairs, with a 95\% CI from resampling whole issues within each newspaper while holding the matched segments fixed (1{,}000 resamples).}")
     L.append(r"\begin{tabular}{@{}lccc@{}}\toprule Model & BA (all) & BA (matched) & 95\% CI \\ \midrule")
     for r in m.itertuples():
         if r.model not in names:
@@ -333,11 +333,14 @@ def supp_tables_extra(out):
     y = pd.read_csv(f"{out}/lexicon_by_year_controlled.csv")
     yc = json.load(open(f"{out}/stats.json"))["lexicon_year_controlled"]
     lab = {"political_per1k": "Political / 1k", "religious_per1k": "Religious / 1k",
-           "pol_share": "Political share"}
+           "pol_share": "Political share",
+           "political_strict_per1k": "Political / 1k, strict",
+           "religious_strict_per1k": "Religious / 1k, strict",
+           "pol_share_strict": "Political share, strict"}
     cap = "; ".join(f"{lab[k]}: mean within-year difference {v['mean_within_year_diff']:+.2f}, "
                     f"within-year permutation $p={v['perm_p_within_year']:.4f}$"
                     for k, v in yc.items())
-    L.append(r"\begin{table*}[h]\centering\small\caption{Year-controlled lexicon comparison: years in which both papers appear (Isigidimi 1886 is missing; 1884 = Nov--Dec). Issue-level means; CI of the difference from bootstrapping issues within the year. "
+    L.append(r"\begin{table*}[h]\centering\small\caption{Year-controlled lexicon comparison: years in which both papers appear (Isigidimi 1886 is missing; 1884 = Nov--Dec). Issue-level means; CI of the difference from bootstrapping issues within the year. \emph{Strict}: patterns with other common senses removed (nyulo/nyulw/nyula, tyala, tandaz, cawa, mfundisi/bafundisi). Exploratory follow-up analysis. "
              + cap + ".}")
     L.append(r"\begin{tabular}{@{}llcccccc@{}}\toprule Measure & Year & Imvo & Isigidimi & Difference & 95\% CI & Issues (I/Is) \\ \midrule")
     for r in y.itertuples():
@@ -346,10 +349,11 @@ def supp_tables_extra(out):
     L.append(r"\bottomrule\end{tabular}\label{tab:yearlex}\end{table*}")
     # lexicon audit
     au = pd.read_csv(f"{out}/lexicon_audit.csv").fillna("")
-    L.append(r"\begin{table*}[h]\centering\scriptsize\caption{Lexicon audit (main window). For each pattern: matches in each paper, the five most frequent matched word types, and one randomly drawn concordance line (lower-cased, punctuation removed). Patterns were drafted from general knowledge of isiXhosa before any per-paper comparison; the concordance check removed false matches (Table~\ref{tab:rejected}) and no pattern was added or removed because of the direction of a difference. Glosses are the author's; a first-language speaker has not reviewed them.}")
+    L.append(r"\begin{table*}[h]\centering\scriptsize\caption{Lexicon audit (main window). For each pattern: matches in each paper, the five most frequent matched word types, and one randomly drawn concordance line (lower-cased, punctuation removed). Patterns were drafted from general knowledge of isiXhosa before any per-paper comparison; the concordance check removed false matches (Table~\ref{tab:rejected}) and no pattern was added or removed because of the direction of a difference. $^\dagger$: pattern with other common senses (excluded in the strict comparison). The audit documents matches but is not semantic validation: precision has not been estimated, and a blank annotation sheet (\texttt{lexicon\_annotation\_sheet.csv}) is provided for a first-language reader. Glosses are the author's.}")
     L.append(r"\begin{tabular}{@{}llrrp{0.30\textwidth}p{0.33\textwidth}@{}}\toprule Cat. & Pattern & Imvo & Isig. & Top matched types & Example context \\ \midrule")
     for r in au.itertuples():
-        L.append(f"{r.category[:3]}. & \\texttt{{{tex(r.pattern)}}} & {r.n_imvo} & {r.n_isig} & "
+        amb = "$^\\dagger$" if isinstance(r.ambiguous, str) and r.ambiguous else ""
+        L.append(f"{r.category[:3]}. & \\texttt{{{tex(r.pattern)}}}{amb} & {r.n_imvo} & {r.n_isig} & "
                  f"\\emph{{{tex(r.top_types)}}} & \\emph{{{tex(r.example_1)}}} \\\\")
     L.append(r"\bottomrule\end{tabular}\label{tab:audit}\end{table*}")
     rj = pd.read_csv(f"{out}/lexicon_rejected.csv")

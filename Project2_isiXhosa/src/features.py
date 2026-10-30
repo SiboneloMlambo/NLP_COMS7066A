@@ -133,13 +133,28 @@ def lexicon_hits(tokens: list[str]):
                     break
 
 
-def lexicon_counts(tokens: list[str]) -> dict[str, int]:
+# Patterns whose concordances show other common senses (robustness check:
+# the comparison is repeated without them).
+AMBIGUOUS = {
+    "nyulo": "also 'choose, select' (e.g. goods), not only elections",
+    "nyulw": "also 'be chosen/selected' in non-electoral senses",
+    "nyula": "also 'choose, select' (e.g. goods), not only elections",
+    "tyala": "also 'debt', not only 'court case, charge'",
+    "tandaz": "also petitioning (e.g. to government), not only prayer",
+    "cawa": "also 'Sunday' as a day of the week",
+    "mfundisi": "also 'teacher', not only 'minister'",
+    "bafundisi": "also 'teachers', not only 'ministers'",
+}
+
+
+def lexicon_counts(tokens: list[str], drop=()) -> dict[str, int]:
+    """Count lexicon matches; patterns listed in `drop` are ignored."""
     out = {k: 0 for k in LEX_RE}
     for w in tokens:
         if EXCLUDE.search(w):
             continue
         for k, pats in LEX_RE.items():
-            if any(p.search(w) for p in pats):
+            if any(p.search(w) for p in pats if p.pattern not in drop):
                 out[k] += 1
     return out
 
