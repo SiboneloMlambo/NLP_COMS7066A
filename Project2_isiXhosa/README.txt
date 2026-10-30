@@ -50,8 +50,8 @@ Experiments
  fragment/name sensitivity model, matched-set intervals and balance
  diagnostics, and the year-controlled and strict lexicon comparisons.
 
-Hyper-parameters are chosen on the validation split by macro-F1; the test
-split is used once. Test CIs: cluster bootstrap over issues (1000 resamples).
+Hyper-parameters are chosen on the validation split by macro-F1; the
+exploratory follow-up analyses reused the held-out test split. Test CIs: cluster bootstrap over issues (1000 resamples).
 
 ------------------------------------------------------------------------
 2. Setup

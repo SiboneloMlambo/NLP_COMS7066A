@@ -257,7 +257,7 @@ def supp_tables(res, out):
     ge = f"{out}/grid_edge_check.csv"
     if os.path.exists(ge):
         d = pd.read_csv(ge)
-        L.append(r"\begin{table}[h]\centering\small\caption{Grid-edge check (validation macro-F1, seed 13). Several selected $C$ values sat at the top of the grid; larger values do not improve validation scores.}")
+        L.append(r"\begin{table}[h]\centering\small\caption{Grid-edge check (validation macro-F1, seed 13). Several selected $C$ values sat at the top of the grid; larger values produce only small changes, at most about +0.002 over $C$=30 (L1 words).}")
         L.append(r"\begin{tabular}{@{}llcccc@{}}\toprule Level & Model & $C$=10 & 30 & 100 & 300 \\ \midrule")
         for (lv, m), x in d.groupby(["level", "model"]):
             vals = " & ".join(f"{v:.3f}" for v in x.sort_values("C").val_macro_f1)
