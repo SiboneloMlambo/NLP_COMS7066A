@@ -97,7 +97,7 @@ def fig_ladder_col(res, out):
     """Column-width version of panel (a) for the main text."""
     ladder = res[res.tag.str.startswith("random_s")]
     agg = ladder.groupby(["level", "model"]).bal_acc.agg(["mean", "std"]).reset_index()
-    fig, ax = plt.subplots(figsize=(3.35, 1.75))
+    fig, ax = plt.subplots(figsize=(3.35, 1.6))
     xs = np.arange(5)
     for m, (c, mk, lab) in MODEL_STYLE.items():
         d = agg[agg.model == m].set_index("level").reindex(list(LEVEL_LABEL))
@@ -116,7 +116,7 @@ def fig_ladder_col(res, out):
 def fig_eras(out):
     lx = pd.read_csv(f"{out}/lexicon_by_issue.csv")
     pb = pd.read_csv(f"{out}/probe_by_issue.csv")
-    fig, (ax, bx) = plt.subplots(1, 2, figsize=(7.0, 1.75), sharex=True,
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(7.0, 1.6), sharex=True,
                                  gridspec_kw=dict(wspace=0.22))
     for a in (ax, bx):
         a.axvspan(1881, 1884 + 10 / 12, color="#f3efe4", zorder=0)
